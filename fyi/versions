@@ -1,0 +1,246 @@
+File: semgrep-grammars/src/tree-sitter-ruby/LICENSE
+Git repo name: ocaml-tree-sitter
+Last git commit:
+  commit 1fa06a9ea8532892e7dd30c8820390beec6dd132
+  Author: Nathaniel Brahms <nbrahms@users.noreply.github.com>
+  Date:   Thu Feb 4 16:29:15 2021 -0800
+  
+      Prefer element reference over method invocation (#156)
+      
+      * Prefer element reference over method invocation
+      
+      Ruby presents two ~syntactic~ sugarings that can not be distinguished
+      unambiguously from syntax alone:
+      
+      First, array elements can be referenced using a bracketed argument after
+      any amount of white space, so:
+      
+          x.[](0)
+      
+          x[0]
+      
+          x [0]
+      
+      are all equivalent.
+      
+      Second, methods may be invoked with omitted parends, so:
+      
+          f(y)
+      
+          f y
+      
+      are equivalent.
+      
+      The ambiguity can be seen when the function argument is a literal array:
+      
+          f [0]
+      
+      At this point, there is no syntactic information that can distinguish
+      between element reference and procedural invocation.
+      
+      This can be seen by running this program in irb:
+      
+          irb(main):001:0> x = [0, 1, 2]
+          => [0, 1, 2]
+          irb(main):002:0> x.[](0)
+          => 0
+          irb(main):003:0> x [0]
+          => 0
+          irb(main):004:0> def y(z)
+          irb(main):005:1>   z
+          irb(main):006:1> end
+          => :y
+          irb(main):007:0> y([0])
+          => [0]
+          irb(main):008:0> y [0]
+          => [0]
+      
+      Previously, tree-sitter-ruby handled this ambiguity by presenting both
+      `x [0]` and `y [0]` as procedural invocation.
+      
+      However, this causes a parse error as described in
+      tree-sitter/tree-sitter-ruby#146, when parsing
+      
+          d.find { |x| a(x) } [b] == c
+      
+      Here I add an optional, lower-precedence interpretation of `x [0]` as an
+      element reference.
+      
+      Due to the construction of the grammar in this project, this
+      unfortunately causes problems when attempting to parse constructs like:
+      
+          fun [0] do
+            something
+          end
+      
+      as the parser will eagerly consume `fun [0]` as the left-hand-side of
+      a binary expression. To deal with this case, I explicitly add this
+      construct to the `call` production rule. Unfortunately I had to resort
+      to the GLR parser in order to resolve the ambiguity between these two
+      rules.
+      
+      Finally, note that the tree obtained from the construct
+      
+          z [0] == 0
+      
+      is context-sensitive in Ruby. If `z` is an array type, it is interpreted
+      as `binary ( reference ( identifier, integer ), integer`. If `z` is
+      a method, it is interpreted as `call ( identifier, binary ( array
+      (integer), integer)`. Since tree-sitter assumes the parsed language is
+      context-free, there's no good way for us to resolve this ambiguity. This
+      commit prefers the second, method-invocation, interpretation, which
+      appears to be more common within the test corpus.
+      
+      * Use external scanner logic to distinguish between arrays & subscripts
+      
+      When an opening square bracket appears immediately after a callable
+      expression like "a" or "a.b", we must decide between two possible
+      interpretations of the bracket:
+      1. It could be part of an element reference, as in
+         `a[0] = true`.
+      2. Or it could be an array literal, passed as an argumet, as in
+         `puts [1, 2, 3]`
+      
+      If there is no preceding whitespace, the bracket should *always* be
+      treated as part of an element reference. This matches MRI's behavior.
+      
+      If there *is* preceding whitespace, MRI makes its decision in a
+      context-sensitive way, based on whether the preceding expression
+      is a local variable or a method name.
+      
+      This parser is not context-sensitive, so we instead will interpret
+      the bracket as part of an array literal whenever that is syntactically
+      valid, and interpret it as part of element reference otherwise. The
+      external scanner can use the validity of other expression tokens like
+      `string` to infer whether an array literal would be valid.
+      
+      Co-authored-by: Max Brunsfeld <maxbrunsfeld@gmail.com>
+---
+File: semgrep-grammars/src/tree-sitter-ruby/grammar.js
+Git repo name: ocaml-tree-sitter
+Last git commit:
+  commit 1fa06a9ea8532892e7dd30c8820390beec6dd132
+  Author: Nathaniel Brahms <nbrahms@users.noreply.github.com>
+  Date:   Thu Feb 4 16:29:15 2021 -0800
+  
+      Prefer element reference over method invocation (#156)
+      
+      * Prefer element reference over method invocation
+      
+      Ruby presents two ~syntactic~ sugarings that can not be distinguished
+      unambiguously from syntax alone:
+      
+      First, array elements can be referenced using a bracketed argument after
+      any amount of white space, so:
+      
+          x.[](0)
+      
+          x[0]
+      
+          x [0]
+      
+      are all equivalent.
+      
+      Second, methods may be invoked with omitted parends, so:
+      
+          f(y)
+      
+          f y
+      
+      are equivalent.
+      
+      The ambiguity can be seen when the function argument is a literal array:
+      
+          f [0]
+      
+      At this point, there is no syntactic information that can distinguish
+      between element reference and procedural invocation.
+      
+      This can be seen by running this program in irb:
+      
+          irb(main):001:0> x = [0, 1, 2]
+          => [0, 1, 2]
+          irb(main):002:0> x.[](0)
+          => 0
+          irb(main):003:0> x [0]
+          => 0
+          irb(main):004:0> def y(z)
+          irb(main):005:1>   z
+          irb(main):006:1> end
+          => :y
+          irb(main):007:0> y([0])
+          => [0]
+          irb(main):008:0> y [0]
+          => [0]
+      
+      Previously, tree-sitter-ruby handled this ambiguity by presenting both
+      `x [0]` and `y [0]` as procedural invocation.
+      
+      However, this causes a parse error as described in
+      tree-sitter/tree-sitter-ruby#146, when parsing
+      
+          d.find { |x| a(x) } [b] == c
+      
+      Here I add an optional, lower-precedence interpretation of `x [0]` as an
+      element reference.
+      
+      Due to the construction of the grammar in this project, this
+      unfortunately causes problems when attempting to parse constructs like:
+      
+          fun [0] do
+            something
+          end
+      
+      as the parser will eagerly consume `fun [0]` as the left-hand-side of
+      a binary expression. To deal with this case, I explicitly add this
+      construct to the `call` production rule. Unfortunately I had to resort
+      to the GLR parser in order to resolve the ambiguity between these two
+      rules.
+      
+      Finally, note that the tree obtained from the construct
+      
+          z [0] == 0
+      
+      is context-sensitive in Ruby. If `z` is an array type, it is interpreted
+      as `binary ( reference ( identifier, integer ), integer`. If `z` is
+      a method, it is interpreted as `call ( identifier, binary ( array
+      (integer), integer)`. Since tree-sitter assumes the parsed language is
+      context-free, there's no good way for us to resolve this ambiguity. This
+      commit prefers the second, method-invocation, interpretation, which
+      appears to be more common within the test corpus.
+      
+      * Use external scanner logic to distinguish between arrays & subscripts
+      
+      When an opening square bracket appears immediately after a callable
+      expression like "a" or "a.b", we must decide between two possible
+      interpretations of the bracket:
+      1. It could be part of an element reference, as in
+         `a[0] = true`.
+      2. Or it could be an array literal, passed as an argumet, as in
+         `puts [1, 2, 3]`
+      
+      If there is no preceding whitespace, the bracket should *always* be
+      treated as part of an element reference. This matches MRI's behavior.
+      
+      If there *is* preceding whitespace, MRI makes its decision in a
+      context-sensitive way, based on whether the preceding expression
+      is a local variable or a method name.
+      
+      This parser is not context-sensitive, so we instead will interpret
+      the bracket as part of an array literal whenever that is syntactically
+      valid, and interpret it as part of element reference otherwise. The
+      external scanner can use the validity of other expression tokens like
+      `string` to infer whether an array literal would be valid.
+      
+      Co-authored-by: Max Brunsfeld <maxbrunsfeld@gmail.com>
+---
+File: semgrep-grammars/src/semgrep-ruby/grammar.js
+Git repo name: ocaml-tree-sitter
+Last git commit:
+  commit 9bca49eafc8489bc0d508057079bec9b7d10f65e
+  Author: Martin Jambon <martin@returntocorp.com>
+  Date:   Wed Apr 14 16:44:28 2021 -0700
+  
+      Include new file 'fyi/versions' that tracks git info associated with
+      each file in the "FYI" list.
+---
