@@ -84,37 +84,6 @@ type imm_tok_colon = Token.t (* ":" *)
 
 type element_reference_bracket = Token.t
 
-type pat_3d340f6 = Token.t (* pattern \s+ *)
-
-type subshell_start = Token.t
-
-type true_ = Token.t
-
-type nil = Token.t
-
-type symbol_start = Token.t
-
-type imm_tok_lpar = Token.t (* "(" *)
-
-type singleton_class_left_angle_left_langle = Token.t
-
-type global_variable =
-  Token.t (* pattern "\\$-?(([!@&`'+~=/\\\\,;.<>*$?:\"])|([0-9]*\
-  )|([a-zA-Z_][a-zA-Z0-9_]*\
-  ))" *)
-
-type heredoc_body_start = Token.t
-
-type string_end = Token.t
-
-type simple_symbol = Token.t
-
-type imm_tok_coloncolon = Token.t (* "::" *)
-
-type line_break = Token.t
-
-type block_ampersand = Token.t
-
 type operator = [
     `DOTDOT of Token.t (* ".." *)
   | `BAR of Token.t (* "|" *)
@@ -146,13 +115,44 @@ type operator = [
   | `BQUOT of Token.t (* "`" *)
 ]
 
+type subshell_start = Token.t
+
+type true_ = Token.t
+
+type nil = Token.t
+
+type symbol_start = Token.t
+
+type imm_tok_lpar = Token.t (* "(" *)
+
+type singleton_class_left_angle_left_langle = Token.t
+
+type global_variable =
+  Token.t (* pattern "\\$-?(([!@&`'+~=/\\\\,;.<>*$?:\"])|([0-9]*\
+  )|([a-zA-Z_][a-zA-Z0-9_]*\
+  ))" *)
+
+type heredoc_body_start = Token.t
+
+type string_end = Token.t
+
+type simple_symbol = Token.t
+
+type regex_start = Token.t
+
+type imm_tok_coloncolon = Token.t (* "::" *)
+
+type line_break = Token.t
+
+type pat_3d340f6 = Token.t (* pattern \s+ *)
+
+type block_ampersand = Token.t
+
 type binary_minus = Token.t
 
 type instance_variable = Token.t
 
 type heredoc_content = Token.t
-
-type regex_start = Token.t
 
 type anon_choice_DOTDOT_ed078ec = [
     `DOTDOT of Token.t (* ".." *)
@@ -377,8 +377,6 @@ and body_statement = (
   * Token.t (* "end" *)
 )
 
-and break_command = (Token.t (* "break" *) * command_argument_list)
-
 and call = (primary * anon_choice_DOT_5431c66 * anon_choice_id_5ca805c)
 
 and call_ = [
@@ -409,21 +407,6 @@ and command_assignment = [
   )
 ]
 
-and command_binary = (
-    expression
-  * [ `Or of Token.t (* "or" *) | `And of Token.t (* "and" *) ]
-  * expression
-)
-
-and command_call = (
-    [
-        `Call of call
-      | `Chai_cmd_call of chained_command_call
-      | `Choice_var of anon_choice_var_18b08b3
-    ]
-  * command_argument_list
-)
-
 and command_call_with_block = [
     `Choice_call_cmd_arg_list_blk of (
         anon_choice_call_fd54051 * command_argument_list * block
@@ -432,10 +415,6 @@ and command_call_with_block = [
         anon_choice_call_fd54051 * command_argument_list * do_block
     )
 ]
-
-and command_operator_assignment = (
-    lhs * anon_choice_PLUSEQ_6a24756 * expression
-)
 
 and command_unary = [
     `Defi_exp of (Token.t (* "defined?" *) * expression)
@@ -475,21 +454,29 @@ and exceptions = (
 )
 
 and expression = [
-    `Choice_cmd_bin of [
-        `Cmd_bin of command_binary
-      | `Cmd_un of command_unary
-      | `Cmd_assign of command_assignment
-      | `Cmd_op_assign of command_operator_assignment
-      | `Cmd_call of command_call
-      | `Cmd_call_with_blk of command_call_with_block
-      | `Chai_cmd_call of chained_command_call
-      | `Ret_cmd of return_command
-      | `Yield_cmd of yield_command
-      | `Brk_cmd of break_command
-      | `Next_cmd of next_command
-      | `Arg of arg
-    ]
-  | `Semg_dots of Token.t (* "..." *)
+    `Cmd_bin of (
+        expression
+      * [ `Or of Token.t (* "or" *) | `And of Token.t (* "and" *) ]
+      * expression
+    )
+  | `Cmd_un of command_unary
+  | `Cmd_assign of command_assignment
+  | `Cmd_op_assign of (lhs * anon_choice_PLUSEQ_6a24756 * expression)
+  | `Cmd_call of (
+        [
+            `Call of call
+          | `Chai_cmd_call of chained_command_call
+          | `Choice_var of anon_choice_var_18b08b3
+        ]
+      * command_argument_list
+    )
+  | `Cmd_call_with_blk of command_call_with_block
+  | `Chai_cmd_call of chained_command_call
+  | `Ret_cmd of (Token.t (* "return" *) * command_argument_list)
+  | `Yield_cmd of (Token.t (* "yield" *) * command_argument_list)
+  | `Brk_cmd of (Token.t (* "break" *) * command_argument_list)
+  | `Next_cmd of (Token.t (* "next" *) * command_argument_list)
+  | `Arg of arg
 ]
 
 and formal_parameter = [
@@ -559,8 +546,6 @@ and mlhs = (
   * (Token.t (* "," *) * anon_choice_lhs_3a98eae) list (* zero or more *)
   * Token.t (* "," *) option
 )
-
-and next_command = (Token.t (* "next" *) * command_argument_list)
 
 and pair = [
     `Arg_EQGT_arg of (arg * Token.t (* "=>" *) * arg)
@@ -730,8 +715,6 @@ and rescue = (
   * anon_choice_term_b9e1843
 )
 
-and return_command = (Token.t (* "return" *) * command_argument_list)
-
 and right_assignment_list = (
     pattern
   * (Token.t (* "," *) * pattern) list (* zero or more *)
@@ -826,8 +809,6 @@ and when_ = (
   * anon_choice_term_b9e1843
 )
 
-and yield_command = (Token.t (* "yield" *) * command_argument_list)
-
 type program = (
     statements option
   * (Token.t (* "__END__" *) * line_break (*tok*) * uninterpreted (*tok*))
@@ -840,9 +821,9 @@ type comment (* inlined *) = Token.t
 
 type super (* inlined *) = Token.t (* "super" *)
 
-type semgrep_dots (* inlined *) = Token.t (* "..." *)
-
 type self (* inlined *) = Token.t (* "self" *)
+
+type old_identifier (* inlined *) = Token.t
 
 type splat_parameter (* inlined *) = (
     Token.t (* "*" *)
@@ -891,6 +872,10 @@ type block_argument (* inlined *) = (block_ampersand (*tok*) * arg)
 
 type break (* inlined *) = (Token.t (* "break" *) * argument_list option)
 
+type break_command (* inlined *) = (
+    Token.t (* "break" *) * command_argument_list
+)
+
 type case (* inlined *) = (
     Token.t (* "case" *)
   * statement option
@@ -911,6 +896,25 @@ type class_ (* inlined *) = (
   * superclass option
   * terminator
   * body_statement
+)
+
+type command_binary (* inlined *) = (
+    expression
+  * [ `Or of Token.t (* "or" *) | `And of Token.t (* "and" *) ]
+  * expression
+)
+
+type command_call (* inlined *) = (
+    [
+        `Call of call
+      | `Chai_cmd_call of chained_command_call
+      | `Choice_var of anon_choice_var_18b08b3
+    ]
+  * command_argument_list
+)
+
+type command_operator_assignment (* inlined *) = (
+    lhs * anon_choice_PLUSEQ_6a24756 * expression
 )
 
 type conditional (* inlined *) = (
@@ -995,6 +999,10 @@ type module_ (* inlined *) = (
 
 type next (* inlined *) = (Token.t (* "next" *) * argument_list option)
 
+type next_command (* inlined *) = (
+    Token.t (* "next" *) * command_argument_list
+)
+
 type operator_assignment (* inlined *) = (
     lhs * anon_choice_PLUSEQ_6a24756 * arg
 )
@@ -1025,6 +1033,10 @@ type rest_assignment (* inlined *) = (Token.t (* "*" *) * lhs option)
 type retry (* inlined *) = (Token.t (* "retry" *) * argument_list option)
 
 type return (* inlined *) = (Token.t (* "return" *) * argument_list option)
+
+type return_command (* inlined *) = (
+    Token.t (* "return" *) * command_argument_list
+)
 
 type singleton_class (* inlined *) = (
     Token.t (* "class" *) * singleton_class_left_angle_left_langle (*tok*)
@@ -1094,6 +1106,10 @@ type while_modifier (* inlined *) = (
 )
 
 type yield (* inlined *) = (Token.t (* "yield" *) * argument_list option)
+
+type yield_command (* inlined *) = (
+    Token.t (* "yield" *) * command_argument_list
+)
 
 type heredoc_body (* inlined *) = (
     heredoc_body_start (*tok*)

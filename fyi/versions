@@ -238,11 +238,11 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-ruby/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: fdf7d1c7f235bd77d30191c71ca4fbff771c4cc3
+Latest commit in repo: d373c86712359d658da874408b3efde255483eae
 Last change in file:
-  commit fdf7d1c7f235bd77d30191c71ca4fbff771c4cc3
+  commit d373c86712359d658da874408b3efde255483eae
   Author: Emma Jin <emjin@users.noreply.github.com>
-  Date:   Tue Feb 21 19:09:03 2023 -0800
+  Date:   Thu Feb 23 17:23:35 2023 -0800
   
-      Add semgrep constructs to ruby
+      Update grammar.js to support metavariables
 ---

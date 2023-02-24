@@ -152,50 +152,6 @@ let map_imm_tok_colon (env : env) (tok : CST.imm_tok_colon) =
 let map_element_reference_bracket (env : env) (tok : CST.element_reference_bracket) =
   (* element_reference_bracket *) token env tok
 
-let map_pat_3d340f6 (env : env) (tok : CST.pat_3d340f6) =
-  (* pattern \s+ *) token env tok
-
-let map_subshell_start (env : env) (tok : CST.subshell_start) =
-  (* subshell_start *) token env tok
-
-let map_true_ (env : env) (tok : CST.true_) =
-  (* true *) token env tok
-
-let map_nil (env : env) (tok : CST.nil) =
-  (* nil *) token env tok
-
-let map_symbol_start (env : env) (tok : CST.symbol_start) =
-  (* symbol_start *) token env tok
-
-let map_imm_tok_lpar (env : env) (tok : CST.imm_tok_lpar) =
-  (* "(" *) token env tok
-
-let map_singleton_class_left_angle_left_langle (env : env) (tok : CST.singleton_class_left_angle_left_langle) =
-  (* singleton_class_left_angle_left_langle *) token env tok
-
-let map_global_variable (env : env) (tok : CST.global_variable) =
-  (* pattern "\\$-?(([!@&`'+~=/\\\\,;.<>*$?:\"])|([0-9]*\
-  )|([a-zA-Z_][a-zA-Z0-9_]*\
-  ))" *) token env tok
-
-let map_heredoc_body_start (env : env) (tok : CST.heredoc_body_start) =
-  (* heredoc_body_start *) token env tok
-
-let map_string_end (env : env) (tok : CST.string_end) =
-  (* string_end *) token env tok
-
-let map_simple_symbol (env : env) (tok : CST.simple_symbol) =
-  (* simple_symbol *) token env tok
-
-let map_imm_tok_coloncolon (env : env) (tok : CST.imm_tok_coloncolon) =
-  (* "::" *) token env tok
-
-let map_line_break (env : env) (tok : CST.line_break) =
-  (* line_break *) token env tok
-
-let map_block_ampersand (env : env) (tok : CST.block_ampersand) =
-  (* block_ampersand *) token env tok
-
 let map_operator (env : env) (x : CST.operator) =
   (match x with
   | `DOTDOT tok -> R.Case ("DOTDOT",
@@ -284,6 +240,53 @@ let map_operator (env : env) (x : CST.operator) =
     )
   )
 
+let map_subshell_start (env : env) (tok : CST.subshell_start) =
+  (* subshell_start *) token env tok
+
+let map_true_ (env : env) (tok : CST.true_) =
+  (* true *) token env tok
+
+let map_nil (env : env) (tok : CST.nil) =
+  (* nil *) token env tok
+
+let map_symbol_start (env : env) (tok : CST.symbol_start) =
+  (* symbol_start *) token env tok
+
+let map_imm_tok_lpar (env : env) (tok : CST.imm_tok_lpar) =
+  (* "(" *) token env tok
+
+let map_singleton_class_left_angle_left_langle (env : env) (tok : CST.singleton_class_left_angle_left_langle) =
+  (* singleton_class_left_angle_left_langle *) token env tok
+
+let map_global_variable (env : env) (tok : CST.global_variable) =
+  (* pattern "\\$-?(([!@&`'+~=/\\\\,;.<>*$?:\"])|([0-9]*\
+  )|([a-zA-Z_][a-zA-Z0-9_]*\
+  ))" *) token env tok
+
+let map_heredoc_body_start (env : env) (tok : CST.heredoc_body_start) =
+  (* heredoc_body_start *) token env tok
+
+let map_string_end (env : env) (tok : CST.string_end) =
+  (* string_end *) token env tok
+
+let map_simple_symbol (env : env) (tok : CST.simple_symbol) =
+  (* simple_symbol *) token env tok
+
+let map_regex_start (env : env) (tok : CST.regex_start) =
+  (* regex_start *) token env tok
+
+let map_imm_tok_coloncolon (env : env) (tok : CST.imm_tok_coloncolon) =
+  (* "::" *) token env tok
+
+let map_line_break (env : env) (tok : CST.line_break) =
+  (* line_break *) token env tok
+
+let map_pat_3d340f6 (env : env) (tok : CST.pat_3d340f6) =
+  (* pattern \s+ *) token env tok
+
+let map_block_ampersand (env : env) (tok : CST.block_ampersand) =
+  (* block_ampersand *) token env tok
+
 let map_binary_minus (env : env) (tok : CST.binary_minus) =
   (* binary_minus *) token env tok
 
@@ -292,9 +295,6 @@ let map_instance_variable (env : env) (tok : CST.instance_variable) =
 
 let map_heredoc_content (env : env) (tok : CST.heredoc_content) =
   (* heredoc_content *) token env tok
-
-let map_regex_start (env : env) (tok : CST.regex_start) =
-  (* regex_start *) token env tok
 
 let map_anon_choice_DOTDOT_ed078ec (env : env) (x : CST.anon_choice_DOTDOT_ed078ec) =
   (match x with
@@ -857,11 +857,6 @@ and map_body_statement (env : env) ((v1, v2, v3) : CST.body_statement) =
   let v3 = (* "end" *) token env v3 in
   R.Tuple [v1; v2; v3]
 
-and map_break_command (env : env) ((v1, v2) : CST.break_command) =
-  let v1 = (* "break" *) token env v1 in
-  let v2 = map_command_argument_list env v2 in
-  R.Tuple [v1; v2]
-
 and map_call (env : env) ((v1, v2, v3) : CST.call) =
   let v1 = map_primary env v1 in
   let v2 = map_anon_choice_DOT_5431c66 env v2 in
@@ -926,38 +921,6 @@ and map_command_assignment (env : env) (x : CST.command_assignment) =
     )
   )
 
-and map_command_binary (env : env) ((v1, v2, v3) : CST.command_binary) =
-  let v1 = map_expression env v1 in
-  let v2 =
-    (match v2 with
-    | `Or tok -> R.Case ("Or",
-        (* "or" *) token env tok
-      )
-    | `And tok -> R.Case ("And",
-        (* "and" *) token env tok
-      )
-    )
-  in
-  let v3 = map_expression env v3 in
-  R.Tuple [v1; v2; v3]
-
-and map_command_call (env : env) ((v1, v2) : CST.command_call) =
-  let v1 =
-    (match v1 with
-    | `Call x -> R.Case ("Call",
-        map_call env x
-      )
-    | `Chai_cmd_call x -> R.Case ("Chai_cmd_call",
-        map_chained_command_call env x
-      )
-    | `Choice_var x -> R.Case ("Choice_var",
-        map_anon_choice_var_18b08b3 env x
-      )
-    )
-  in
-  let v2 = map_command_argument_list env v2 in
-  R.Tuple [v1; v2]
-
 and map_command_call_with_block (env : env) (x : CST.command_call_with_block) =
   (match x with
   | `Choice_call_cmd_arg_list_blk (v1, v2, v3) -> R.Case ("Choice_call_cmd_arg_list_blk",
@@ -973,12 +936,6 @@ and map_command_call_with_block (env : env) (x : CST.command_call_with_block) =
       R.Tuple [v1; v2; v3]
     )
   )
-
-and map_command_operator_assignment (env : env) ((v1, v2, v3) : CST.command_operator_assignment) =
-  let v1 = map_lhs env v1 in
-  let v2 = map_anon_choice_PLUSEQ_6a24756 env v2 in
-  let v3 = map_expression env v3 in
-  R.Tuple [v1; v2; v3]
 
 and map_command_unary (env : env) (x : CST.command_unary) =
   (match x with
@@ -1111,48 +1068,78 @@ and map_exceptions (env : env) ((v1, v2) : CST.exceptions) =
 
 and map_expression (env : env) (x : CST.expression) =
   (match x with
-  | `Choice_cmd_bin x -> R.Case ("Choice_cmd_bin",
-      (match x with
-      | `Cmd_bin x -> R.Case ("Cmd_bin",
-          map_command_binary env x
+  | `Cmd_bin (v1, v2, v3) -> R.Case ("Cmd_bin",
+      let v1 = map_expression env v1 in
+      let v2 =
+        (match v2 with
+        | `Or tok -> R.Case ("Or",
+            (* "or" *) token env tok
+          )
+        | `And tok -> R.Case ("And",
+            (* "and" *) token env tok
+          )
         )
-      | `Cmd_un x -> R.Case ("Cmd_un",
-          map_command_unary env x
-        )
-      | `Cmd_assign x -> R.Case ("Cmd_assign",
-          map_command_assignment env x
-        )
-      | `Cmd_op_assign x -> R.Case ("Cmd_op_assign",
-          map_command_operator_assignment env x
-        )
-      | `Cmd_call x -> R.Case ("Cmd_call",
-          map_command_call env x
-        )
-      | `Cmd_call_with_blk x -> R.Case ("Cmd_call_with_blk",
-          map_command_call_with_block env x
-        )
-      | `Chai_cmd_call x -> R.Case ("Chai_cmd_call",
-          map_chained_command_call env x
-        )
-      | `Ret_cmd x -> R.Case ("Ret_cmd",
-          map_return_command env x
-        )
-      | `Yield_cmd x -> R.Case ("Yield_cmd",
-          map_yield_command env x
-        )
-      | `Brk_cmd x -> R.Case ("Brk_cmd",
-          map_break_command env x
-        )
-      | `Next_cmd x -> R.Case ("Next_cmd",
-          map_next_command env x
-        )
-      | `Arg x -> R.Case ("Arg",
-          map_arg env x
-        )
-      )
+      in
+      let v3 = map_expression env v3 in
+      R.Tuple [v1; v2; v3]
     )
-  | `Semg_dots tok -> R.Case ("Semg_dots",
-      (* "..." *) token env tok
+  | `Cmd_un x -> R.Case ("Cmd_un",
+      map_command_unary env x
+    )
+  | `Cmd_assign x -> R.Case ("Cmd_assign",
+      map_command_assignment env x
+    )
+  | `Cmd_op_assign (v1, v2, v3) -> R.Case ("Cmd_op_assign",
+      let v1 = map_lhs env v1 in
+      let v2 = map_anon_choice_PLUSEQ_6a24756 env v2 in
+      let v3 = map_expression env v3 in
+      R.Tuple [v1; v2; v3]
+    )
+  | `Cmd_call (v1, v2) -> R.Case ("Cmd_call",
+      let v1 =
+        (match v1 with
+        | `Call x -> R.Case ("Call",
+            map_call env x
+          )
+        | `Chai_cmd_call x -> R.Case ("Chai_cmd_call",
+            map_chained_command_call env x
+          )
+        | `Choice_var x -> R.Case ("Choice_var",
+            map_anon_choice_var_18b08b3 env x
+          )
+        )
+      in
+      let v2 = map_command_argument_list env v2 in
+      R.Tuple [v1; v2]
+    )
+  | `Cmd_call_with_blk x -> R.Case ("Cmd_call_with_blk",
+      map_command_call_with_block env x
+    )
+  | `Chai_cmd_call x -> R.Case ("Chai_cmd_call",
+      map_chained_command_call env x
+    )
+  | `Ret_cmd (v1, v2) -> R.Case ("Ret_cmd",
+      let v1 = (* "return" *) token env v1 in
+      let v2 = map_command_argument_list env v2 in
+      R.Tuple [v1; v2]
+    )
+  | `Yield_cmd (v1, v2) -> R.Case ("Yield_cmd",
+      let v1 = (* "yield" *) token env v1 in
+      let v2 = map_command_argument_list env v2 in
+      R.Tuple [v1; v2]
+    )
+  | `Brk_cmd (v1, v2) -> R.Case ("Brk_cmd",
+      let v1 = (* "break" *) token env v1 in
+      let v2 = map_command_argument_list env v2 in
+      R.Tuple [v1; v2]
+    )
+  | `Next_cmd (v1, v2) -> R.Case ("Next_cmd",
+      let v1 = (* "next" *) token env v1 in
+      let v2 = map_command_argument_list env v2 in
+      R.Tuple [v1; v2]
+    )
+  | `Arg x -> R.Case ("Arg",
+      map_arg env x
     )
   )
 
@@ -1327,11 +1314,6 @@ and map_mlhs (env : env) ((v1, v2, v3) : CST.mlhs) =
     | None -> R.Option None)
   in
   R.Tuple [v1; v2; v3]
-
-and map_next_command (env : env) ((v1, v2) : CST.next_command) =
-  let v1 = (* "next" *) token env v1 in
-  let v2 = map_command_argument_list env v2 in
-  R.Tuple [v1; v2]
 
 and map_pair (env : env) (x : CST.pair) =
   (match x with
@@ -1870,11 +1852,6 @@ and map_rescue (env : env) ((v1, v2, v3, v4) : CST.rescue) =
   let v4 = map_anon_choice_term_b9e1843 env v4 in
   R.Tuple [v1; v2; v3; v4]
 
-and map_return_command (env : env) ((v1, v2) : CST.return_command) =
-  let v1 = (* "return" *) token env v1 in
-  let v2 = map_command_argument_list env v2 in
-  R.Tuple [v1; v2]
-
 and map_right_assignment_list (env : env) ((v1, v2) : CST.right_assignment_list) =
   let v1 = map_pattern env v1 in
   let v2 =
@@ -2160,11 +2137,6 @@ and map_when_ (env : env) ((v1, v2, v3, v4) : CST.when_) =
   in
   let v4 = map_anon_choice_term_b9e1843 env v4 in
   R.Tuple [v1; v2; v3; v4]
-
-and map_yield_command (env : env) ((v1, v2) : CST.yield_command) =
-  let v1 = (* "yield" *) token env v1 in
-  let v2 = map_command_argument_list env v2 in
-  R.Tuple [v1; v2]
 
 let map_program (env : env) ((v1, v2) : CST.program) =
   let v1 =

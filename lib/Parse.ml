@@ -61,12 +61,7 @@ let children_regexps : (string * Run.exp option) list = [
   "hash_key_symbol", None;
   "character", None;
   "imm_tok_coloncolon", None;
-  "self", None;
-  "pat_3d340f6", None;
-  "string_start", None;
-  "imm_tok_lpar", None;
-  "string_end", None;
-  "splat_star", None;
+  "regex_start", None;
   "operator",
   Some (
     Alt [|
@@ -100,13 +95,17 @@ let children_regexps : (string * Run.exp option) list = [
       Token (Literal "`");
     |];
   );
-  "regex_start", None;
+  "string_start", None;
+  "imm_tok_lpar", None;
+  "string_end", None;
+  "splat_star", None;
   "simple_symbol", None;
   "constant", None;
   "singleton_class_left_angle_left_langle", None;
   "string_content", None;
-  "semgrep_dots", None;
+  "self", None;
   "class_variable", None;
+  "pat_3d340f6", None;
   "instance_variable", None;
   "binary_star", None;
   "heredoc_beginning", None;
@@ -879,21 +878,18 @@ let children_regexps : (string * Run.exp option) list = [
   "expression",
   Some (
     Alt [|
-      Alt [|
-        Token (Name "command_binary");
-        Token (Name "command_unary");
-        Token (Name "command_assignment");
-        Token (Name "command_operator_assignment");
-        Token (Name "command_call");
-        Token (Name "command_call_with_block");
-        Token (Name "chained_command_call");
-        Token (Name "return_command");
-        Token (Name "yield_command");
-        Token (Name "break_command");
-        Token (Name "next_command");
-        Token (Name "arg");
-      |];
-      Token (Name "semgrep_dots");
+      Token (Name "command_binary");
+      Token (Name "command_unary");
+      Token (Name "command_assignment");
+      Token (Name "command_operator_assignment");
+      Token (Name "command_call");
+      Token (Name "command_call_with_block");
+      Token (Name "chained_command_call");
+      Token (Name "return_command");
+      Token (Name "yield_command");
+      Token (Name "break_command");
+      Token (Name "next_command");
+      Token (Name "arg");
     |];
   );
   "for",
@@ -1878,33 +1874,7 @@ let trans_imm_tok_coloncolon ((kind, body) : mt) : CST.imm_tok_coloncolon =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_self ((kind, body) : mt) : CST.self =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-let trans_pat_3d340f6 ((kind, body) : mt) : CST.pat_3d340f6 =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-let trans_string_start ((kind, body) : mt) : CST.string_start =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-
-let trans_imm_tok_lpar ((kind, body) : mt) : CST.imm_tok_lpar =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-let trans_string_end ((kind, body) : mt) : CST.string_end =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-let trans_splat_star ((kind, body) : mt) : CST.splat_star =
+let trans_regex_start ((kind, body) : mt) : CST.regex_start =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -2029,10 +1999,27 @@ let trans_operator ((kind, body) : mt) : CST.operator =
       )
   | Leaf _ -> assert false
 
-let trans_regex_start ((kind, body) : mt) : CST.regex_start =
+let trans_string_start ((kind, body) : mt) : CST.string_start =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
+
+
+let trans_imm_tok_lpar ((kind, body) : mt) : CST.imm_tok_lpar =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_string_end ((kind, body) : mt) : CST.string_end =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_splat_star ((kind, body) : mt) : CST.splat_star =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
 
 let trans_simple_symbol ((kind, body) : mt) : CST.simple_symbol =
   match body with
@@ -2054,12 +2041,17 @@ let trans_string_content ((kind, body) : mt) : CST.string_content =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_semgrep_dots ((kind, body) : mt) : CST.semgrep_dots =
+let trans_self ((kind, body) : mt) : CST.self =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
 
 let trans_class_variable ((kind, body) : mt) : CST.class_variable =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_pat_3d340f6 ((kind, body) : mt) : CST.pat_3d340f6 =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -3850,62 +3842,52 @@ and trans_expression ((kind, body) : mt) : CST.expression =
   | Children v ->
       (match v with
       | Alt (0, v) ->
-          `Choice_cmd_bin (
-            (match v with
-            | Alt (0, v) ->
-                `Cmd_bin (
-                  trans_command_binary (Run.matcher_token v)
-                )
-            | Alt (1, v) ->
-                `Cmd_un (
-                  trans_command_unary (Run.matcher_token v)
-                )
-            | Alt (2, v) ->
-                `Cmd_assign (
-                  trans_command_assignment (Run.matcher_token v)
-                )
-            | Alt (3, v) ->
-                `Cmd_op_assign (
-                  trans_command_operator_assignment (Run.matcher_token v)
-                )
-            | Alt (4, v) ->
-                `Cmd_call (
-                  trans_command_call (Run.matcher_token v)
-                )
-            | Alt (5, v) ->
-                `Cmd_call_with_blk (
-                  trans_command_call_with_block (Run.matcher_token v)
-                )
-            | Alt (6, v) ->
-                `Chai_cmd_call (
-                  trans_chained_command_call (Run.matcher_token v)
-                )
-            | Alt (7, v) ->
-                `Ret_cmd (
-                  trans_return_command (Run.matcher_token v)
-                )
-            | Alt (8, v) ->
-                `Yield_cmd (
-                  trans_yield_command (Run.matcher_token v)
-                )
-            | Alt (9, v) ->
-                `Brk_cmd (
-                  trans_break_command (Run.matcher_token v)
-                )
-            | Alt (10, v) ->
-                `Next_cmd (
-                  trans_next_command (Run.matcher_token v)
-                )
-            | Alt (11, v) ->
-                `Arg (
-                  trans_arg (Run.matcher_token v)
-                )
-            | _ -> assert false
-            )
+          `Cmd_bin (
+            trans_command_binary (Run.matcher_token v)
           )
       | Alt (1, v) ->
-          `Semg_dots (
-            trans_semgrep_dots (Run.matcher_token v)
+          `Cmd_un (
+            trans_command_unary (Run.matcher_token v)
+          )
+      | Alt (2, v) ->
+          `Cmd_assign (
+            trans_command_assignment (Run.matcher_token v)
+          )
+      | Alt (3, v) ->
+          `Cmd_op_assign (
+            trans_command_operator_assignment (Run.matcher_token v)
+          )
+      | Alt (4, v) ->
+          `Cmd_call (
+            trans_command_call (Run.matcher_token v)
+          )
+      | Alt (5, v) ->
+          `Cmd_call_with_blk (
+            trans_command_call_with_block (Run.matcher_token v)
+          )
+      | Alt (6, v) ->
+          `Chai_cmd_call (
+            trans_chained_command_call (Run.matcher_token v)
+          )
+      | Alt (7, v) ->
+          `Ret_cmd (
+            trans_return_command (Run.matcher_token v)
+          )
+      | Alt (8, v) ->
+          `Yield_cmd (
+            trans_yield_command (Run.matcher_token v)
+          )
+      | Alt (9, v) ->
+          `Brk_cmd (
+            trans_break_command (Run.matcher_token v)
+          )
+      | Alt (10, v) ->
+          `Next_cmd (
+            trans_next_command (Run.matcher_token v)
+          )
+      | Alt (11, v) ->
+          `Arg (
+            trans_arg (Run.matcher_token v)
           )
       | _ -> assert false
       )
