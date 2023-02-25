@@ -8,11 +8,13 @@
 open! Sexplib.Conv
 open Tree_sitter_run
 
-type splat_star = Token.t
+type string_array_start = Token.t
 
 type hash_splat_star_star = Token.t
 
-type string_content = Token.t
+type splat_star = Token.t
+
+type string_end = Token.t
 
 type anon_choice_PLUSEQ_6a24756 = [
     `PLUSEQ of Token.t (* "+=" *)
@@ -32,9 +34,11 @@ type anon_choice_PLUSEQ_6a24756 = [
 
 type heredoc_end = Token.t
 
-type unary_minus = Token.t
+type uninterpreted = Token.t (* pattern (.|\s)* *)
 
 type complex = Token.t (* pattern (\d+)?(\+|-)?(\d+)i *)
+
+type symbol_array_start = Token.t
 
 type identifier = Token.t
 
@@ -43,7 +47,7 @@ type character =
 
 type binary_star = Token.t
 
-type string_start = Token.t
+type subshell_start = Token.t
 
 type anon_choice_BANG_b88b9c5 = [
     `BANG of Token.t (* "!" *)
@@ -66,7 +70,7 @@ type float_ =
 type integer =
   Token.t (* pattern 0[bB][01](_?[01])*|0[oO]?[0-7](_?[0-7])*|(0[dD])?\d(_?\d)*|0[xX][0-9a-fA-F](_?[0-9a-fA-F])* *)
 
-type symbol_array_start = Token.t
+type symbol_start = Token.t
 
 type heredoc_beginning = Token.t
 
@@ -74,15 +78,42 @@ type binary_star_star = Token.t
 
 type class_variable = Token.t
 
-type uninterpreted = Token.t (* pattern (.|\s)* *)
-
-type string_array_start = Token.t
+type string_content = Token.t
 
 type escape_sequence = Token.t
 
 type imm_tok_colon = Token.t (* ":" *)
 
 type element_reference_bracket = Token.t
+
+type pat_3d340f6 = Token.t (* pattern \s+ *)
+
+type true_ = Token.t
+
+type nil = Token.t
+
+type unary_minus = Token.t
+
+type imm_tok_lpar = Token.t (* "(" *)
+
+type global_variable =
+  Token.t (* pattern "\\$-?(([!@&`'+~=/\\\\,;.<>*$?:\"])|([0-9]*\
+  )|([a-zA-Z_][a-zA-Z0-9_]*\
+  ))" *)
+
+type heredoc_body_start = Token.t
+
+type string_start = Token.t
+
+type singleton_class_left_angle_left_langle = Token.t
+
+type imm_tok_coloncolon = Token.t (* "::" *)
+
+type line_break = Token.t
+
+type block_ampersand = Token.t
+
+type simple_symbol = Token.t
 
 type operator = [
     `DOTDOT of Token.t (* ".." *)
@@ -115,44 +146,13 @@ type operator = [
   | `BQUOT of Token.t (* "`" *)
 ]
 
-type subshell_start = Token.t
-
-type true_ = Token.t
-
-type nil = Token.t
-
-type symbol_start = Token.t
-
-type imm_tok_lpar = Token.t (* "(" *)
-
-type singleton_class_left_angle_left_langle = Token.t
-
-type global_variable =
-  Token.t (* pattern "\\$-?(([!@&`'+~=/\\\\,;.<>*$?:\"])|([0-9]*\
-  )|([a-zA-Z_][a-zA-Z0-9_]*\
-  ))" *)
-
-type heredoc_body_start = Token.t
-
-type string_end = Token.t
-
-type simple_symbol = Token.t
-
-type regex_start = Token.t
-
-type imm_tok_coloncolon = Token.t (* "::" *)
-
-type line_break = Token.t
-
-type pat_3d340f6 = Token.t (* pattern \s+ *)
-
-type block_ampersand = Token.t
-
 type binary_minus = Token.t
 
 type instance_variable = Token.t
 
 type heredoc_content = Token.t
+
+type regex_start = Token.t
 
 type anon_choice_DOTDOT_ed078ec = [
     `DOTDOT of Token.t (* ".." *)
@@ -161,14 +161,14 @@ type anon_choice_DOTDOT_ed078ec = [
 
 type false_ = Token.t
 
-type anon_choice_un_minus_157a1bc = [
-    `Un_minus of unary_minus (*tok*)
-  | `PLUS of Token.t (* "+" *)
-]
-
 type anon_choice_int_e7b97da = [
     `Int of integer (*tok*)
   | `Float of float_ (*tok*)
+]
+
+type anon_choice_un_minus_157a1bc = [
+    `Un_minus of unary_minus (*tok*)
+  | `PLUS of Token.t (* "+" *)
 ]
 
 type terminator = [
@@ -823,12 +823,7 @@ type super (* inlined *) = Token.t (* "super" *)
 
 type self (* inlined *) = Token.t (* "self" *)
 
-type old_identifier (* inlined *) = Token.t
-
-type splat_parameter (* inlined *) = (
-    Token.t (* "*" *)
-  * identifier (*tok*) option
-)
+type setter (* inlined *) = (identifier (*tok*) * Token.t (* "=" *))
 
 type hash_splat_parameter (* inlined *) = (
     Token.t (* "**" *)
@@ -837,13 +832,16 @@ type hash_splat_parameter (* inlined *) = (
 
 type block_parameter (* inlined *) = (Token.t (* "&" *) * identifier (*tok*))
 
-type setter (* inlined *) = (identifier (*tok*) * Token.t (* "=" *))
+type splat_parameter (* inlined *) = (
+    Token.t (* "*" *)
+  * identifier (*tok*) option
+)
+
+type rational (* inlined *) = (anon_choice_int_e7b97da * Token.t (* "r" *))
 
 type unary_literal (* inlined *) = (
     anon_choice_un_minus_157a1bc * anon_choice_int_e7b97da
 )
-
-type rational (* inlined *) = (anon_choice_int_e7b97da * Token.t (* "r" *))
 
 type alias (* inlined *) = (
     Token.t (* "alias" *) * method_name * method_name

@@ -19,14 +19,17 @@ let token (env : env) (tok : Tree_sitter_run.Token.t) =
 let blank (env : env) () =
   R.Tuple []
 
-let map_splat_star (env : env) (tok : CST.splat_star) =
-  (* splat_star *) token env tok
+let map_string_array_start (env : env) (tok : CST.string_array_start) =
+  (* string_array_start *) token env tok
 
 let map_hash_splat_star_star (env : env) (tok : CST.hash_splat_star_star) =
   (* hash_splat_star_star *) token env tok
 
-let map_string_content (env : env) (tok : CST.string_content) =
-  (* string_content *) token env tok
+let map_splat_star (env : env) (tok : CST.splat_star) =
+  (* splat_star *) token env tok
+
+let map_string_end (env : env) (tok : CST.string_end) =
+  (* string_end *) token env tok
 
 let map_anon_choice_PLUSEQ_6a24756 (env : env) (x : CST.anon_choice_PLUSEQ_6a24756) =
   (match x with
@@ -74,11 +77,14 @@ let map_anon_choice_PLUSEQ_6a24756 (env : env) (x : CST.anon_choice_PLUSEQ_6a247
 let map_heredoc_end (env : env) (tok : CST.heredoc_end) =
   (* heredoc_end *) token env tok
 
-let map_unary_minus (env : env) (tok : CST.unary_minus) =
-  (* unary_minus *) token env tok
+let map_uninterpreted (env : env) (tok : CST.uninterpreted) =
+  (* pattern (.|\s)* *) token env tok
 
 let map_complex (env : env) (tok : CST.complex) =
   (* pattern (\d+)?(\+|-)?(\d+)i *) token env tok
+
+let map_symbol_array_start (env : env) (tok : CST.symbol_array_start) =
+  (* symbol_array_start *) token env tok
 
 let map_identifier (env : env) (tok : CST.identifier) =
   (* identifier *) token env tok
@@ -89,8 +95,8 @@ let map_character (env : env) (tok : CST.character) =
 let map_binary_star (env : env) (tok : CST.binary_star) =
   (* binary_star *) token env tok
 
-let map_string_start (env : env) (tok : CST.string_start) =
-  (* string_start *) token env tok
+let map_subshell_start (env : env) (tok : CST.subshell_start) =
+  (* subshell_start *) token env tok
 
 let map_anon_choice_BANG_b88b9c5 (env : env) (x : CST.anon_choice_BANG_b88b9c5) =
   (match x with
@@ -125,8 +131,8 @@ let map_float_ (env : env) (tok : CST.float_) =
 let map_integer (env : env) (tok : CST.integer) =
   (* pattern 0[bB][01](_?[01])*|0[oO]?[0-7](_?[0-7])*|(0[dD])?\d(_?\d)*|0[xX][0-9a-fA-F](_?[0-9a-fA-F])* *) token env tok
 
-let map_symbol_array_start (env : env) (tok : CST.symbol_array_start) =
-  (* symbol_array_start *) token env tok
+let map_symbol_start (env : env) (tok : CST.symbol_start) =
+  (* symbol_start *) token env tok
 
 let map_heredoc_beginning (env : env) (tok : CST.heredoc_beginning) =
   (* heredoc_beginning *) token env tok
@@ -137,11 +143,8 @@ let map_binary_star_star (env : env) (tok : CST.binary_star_star) =
 let map_class_variable (env : env) (tok : CST.class_variable) =
   (* class_variable *) token env tok
 
-let map_uninterpreted (env : env) (tok : CST.uninterpreted) =
-  (* pattern (.|\s)* *) token env tok
-
-let map_string_array_start (env : env) (tok : CST.string_array_start) =
-  (* string_array_start *) token env tok
+let map_string_content (env : env) (tok : CST.string_content) =
+  (* string_content *) token env tok
 
 let map_escape_sequence (env : env) (tok : CST.escape_sequence) =
   (* escape_sequence *) token env tok
@@ -151,6 +154,47 @@ let map_imm_tok_colon (env : env) (tok : CST.imm_tok_colon) =
 
 let map_element_reference_bracket (env : env) (tok : CST.element_reference_bracket) =
   (* element_reference_bracket *) token env tok
+
+let map_pat_3d340f6 (env : env) (tok : CST.pat_3d340f6) =
+  (* pattern \s+ *) token env tok
+
+let map_true_ (env : env) (tok : CST.true_) =
+  (* true *) token env tok
+
+let map_nil (env : env) (tok : CST.nil) =
+  (* nil *) token env tok
+
+let map_unary_minus (env : env) (tok : CST.unary_minus) =
+  (* unary_minus *) token env tok
+
+let map_imm_tok_lpar (env : env) (tok : CST.imm_tok_lpar) =
+  (* "(" *) token env tok
+
+let map_global_variable (env : env) (tok : CST.global_variable) =
+  (* pattern "\\$-?(([!@&`'+~=/\\\\,;.<>*$?:\"])|([0-9]*\
+  )|([a-zA-Z_][a-zA-Z0-9_]*\
+  ))" *) token env tok
+
+let map_heredoc_body_start (env : env) (tok : CST.heredoc_body_start) =
+  (* heredoc_body_start *) token env tok
+
+let map_string_start (env : env) (tok : CST.string_start) =
+  (* string_start *) token env tok
+
+let map_singleton_class_left_angle_left_langle (env : env) (tok : CST.singleton_class_left_angle_left_langle) =
+  (* singleton_class_left_angle_left_langle *) token env tok
+
+let map_imm_tok_coloncolon (env : env) (tok : CST.imm_tok_coloncolon) =
+  (* "::" *) token env tok
+
+let map_line_break (env : env) (tok : CST.line_break) =
+  (* line_break *) token env tok
+
+let map_block_ampersand (env : env) (tok : CST.block_ampersand) =
+  (* block_ampersand *) token env tok
+
+let map_simple_symbol (env : env) (tok : CST.simple_symbol) =
+  (* simple_symbol *) token env tok
 
 let map_operator (env : env) (x : CST.operator) =
   (match x with
@@ -240,53 +284,6 @@ let map_operator (env : env) (x : CST.operator) =
     )
   )
 
-let map_subshell_start (env : env) (tok : CST.subshell_start) =
-  (* subshell_start *) token env tok
-
-let map_true_ (env : env) (tok : CST.true_) =
-  (* true *) token env tok
-
-let map_nil (env : env) (tok : CST.nil) =
-  (* nil *) token env tok
-
-let map_symbol_start (env : env) (tok : CST.symbol_start) =
-  (* symbol_start *) token env tok
-
-let map_imm_tok_lpar (env : env) (tok : CST.imm_tok_lpar) =
-  (* "(" *) token env tok
-
-let map_singleton_class_left_angle_left_langle (env : env) (tok : CST.singleton_class_left_angle_left_langle) =
-  (* singleton_class_left_angle_left_langle *) token env tok
-
-let map_global_variable (env : env) (tok : CST.global_variable) =
-  (* pattern "\\$-?(([!@&`'+~=/\\\\,;.<>*$?:\"])|([0-9]*\
-  )|([a-zA-Z_][a-zA-Z0-9_]*\
-  ))" *) token env tok
-
-let map_heredoc_body_start (env : env) (tok : CST.heredoc_body_start) =
-  (* heredoc_body_start *) token env tok
-
-let map_string_end (env : env) (tok : CST.string_end) =
-  (* string_end *) token env tok
-
-let map_simple_symbol (env : env) (tok : CST.simple_symbol) =
-  (* simple_symbol *) token env tok
-
-let map_regex_start (env : env) (tok : CST.regex_start) =
-  (* regex_start *) token env tok
-
-let map_imm_tok_coloncolon (env : env) (tok : CST.imm_tok_coloncolon) =
-  (* "::" *) token env tok
-
-let map_line_break (env : env) (tok : CST.line_break) =
-  (* line_break *) token env tok
-
-let map_pat_3d340f6 (env : env) (tok : CST.pat_3d340f6) =
-  (* pattern \s+ *) token env tok
-
-let map_block_ampersand (env : env) (tok : CST.block_ampersand) =
-  (* block_ampersand *) token env tok
-
 let map_binary_minus (env : env) (tok : CST.binary_minus) =
   (* binary_minus *) token env tok
 
@@ -295,6 +292,9 @@ let map_instance_variable (env : env) (tok : CST.instance_variable) =
 
 let map_heredoc_content (env : env) (tok : CST.heredoc_content) =
   (* heredoc_content *) token env tok
+
+let map_regex_start (env : env) (tok : CST.regex_start) =
+  (* regex_start *) token env tok
 
 let map_anon_choice_DOTDOT_ed078ec (env : env) (x : CST.anon_choice_DOTDOT_ed078ec) =
   (match x with
@@ -309,16 +309,6 @@ let map_anon_choice_DOTDOT_ed078ec (env : env) (x : CST.anon_choice_DOTDOT_ed078
 let map_false_ (env : env) (tok : CST.false_) =
   (* false *) token env tok
 
-let map_anon_choice_un_minus_157a1bc (env : env) (x : CST.anon_choice_un_minus_157a1bc) =
-  (match x with
-  | `Un_minus tok -> R.Case ("Un_minus",
-      (* unary_minus *) token env tok
-    )
-  | `PLUS tok -> R.Case ("PLUS",
-      (* "+" *) token env tok
-    )
-  )
-
 let map_anon_choice_int_e7b97da (env : env) (x : CST.anon_choice_int_e7b97da) =
   (match x with
   | `Int tok -> R.Case ("Int",
@@ -327,6 +317,16 @@ let map_anon_choice_int_e7b97da (env : env) (x : CST.anon_choice_int_e7b97da) =
   | `Float tok -> R.Case ("Float",
       (* pattern \d(_?\d)*(\.\d)?(_?\d)*([eE][\+-]?\d(_?\d)*\
   )? *) token env tok
+    )
+  )
+
+let map_anon_choice_un_minus_157a1bc (env : env) (x : CST.anon_choice_un_minus_157a1bc) =
+  (match x with
+  | `Un_minus tok -> R.Case ("Un_minus",
+      (* unary_minus *) token env tok
+    )
+  | `PLUS tok -> R.Case ("PLUS",
+      (* "+" *) token env tok
     )
   )
 

@@ -34,34 +34,39 @@ let extras = [
 ]
 
 let children_regexps : (string * Run.exp option) list = [
-  "super", None;
+  "symbol_array_start", None;
   "identifier", None;
-  "subshell_start", None;
-  "symbol_start", None;
+  "super", None;
   "block_ampersand", None;
   "integer", None;
   "false", None;
   "float", None;
-  "unary_minus", None;
+  "uninterpreted", None;
   "line_break", None;
   "empty_statement", None;
-  "string_array_start", None;
-  "true", None;
+  "string_content", None;
   "binary_minus", None;
   "binary_star_star", None;
   "global_variable", None;
-  "uninterpreted", None;
   "imm_tok_colon", None;
   "element_reference_bracket", None;
   "complex", None;
   "escape_sequence", None;
-  "symbol_array_start", None;
+  "symbol_start", None;
   "hash_splat_star_star", None;
   "nil", None;
   "hash_key_symbol", None;
+  "simple_symbol", None;
+  "unary_minus", None;
   "character", None;
   "imm_tok_coloncolon", None;
-  "regex_start", None;
+  "self", None;
+  "pat_3d340f6", None;
+  "subshell_start", None;
+  "imm_tok_lpar", None;
+  "true", None;
+  "string_start", None;
+  "string_array_start", None;
   "operator",
   Some (
     Alt [|
@@ -95,18 +100,13 @@ let children_regexps : (string * Run.exp option) list = [
       Token (Literal "`");
     |];
   );
-  "string_start", None;
-  "imm_tok_lpar", None;
-  "string_end", None;
-  "splat_star", None;
-  "simple_symbol", None;
-  "constant", None;
+  "regex_start", None;
   "singleton_class_left_angle_left_langle", None;
-  "string_content", None;
-  "self", None;
+  "constant", None;
+  "string_end", None;
   "class_variable", None;
-  "pat_3d340f6", None;
   "instance_variable", None;
+  "splat_star", None;
   "binary_star", None;
   "heredoc_beginning", None;
   "hash_splat_parameter",
@@ -116,13 +116,6 @@ let children_regexps : (string * Run.exp option) list = [
       Opt (
         Token (Name "identifier");
       );
-    ];
-  );
-  "setter",
-  Some (
-    Seq [
-      Token (Name "identifier");
-      Token (Literal "=");
     ];
   );
   "block_parameter",
@@ -141,6 +134,13 @@ let children_regexps : (string * Run.exp option) list = [
       );
     ];
   );
+  "setter",
+  Some (
+    Seq [
+      Token (Name "identifier");
+      Token (Literal "=");
+    ];
+  );
   "rational",
   Some (
     Seq [
@@ -150,6 +150,13 @@ let children_regexps : (string * Run.exp option) list = [
       |];
       Token (Literal "r");
     ];
+  );
+  "terminator",
+  Some (
+    Alt [|
+      Token (Name "line_break");
+      Token (Literal ";");
+    |];
   );
   "unary_literal",
   Some (
@@ -163,13 +170,6 @@ let children_regexps : (string * Run.exp option) list = [
         Token (Name "float");
       |];
     ];
-  );
-  "terminator",
-  Some (
-    Alt [|
-      Token (Name "line_break");
-      Token (Literal ";");
-    |];
   );
   "variable",
   Some (
@@ -1736,7 +1736,7 @@ let children_regexps : (string * Run.exp option) list = [
   );
 ]
 
-let trans_super ((kind, body) : mt) : CST.super =
+let trans_symbol_array_start ((kind, body) : mt) : CST.symbol_array_start =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -1746,12 +1746,7 @@ let trans_identifier ((kind, body) : mt) : CST.identifier =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_subshell_start ((kind, body) : mt) : CST.subshell_start =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-let trans_symbol_start ((kind, body) : mt) : CST.symbol_start =
+let trans_super ((kind, body) : mt) : CST.super =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -1776,7 +1771,7 @@ let trans_float_ ((kind, body) : mt) : CST.float_ =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_unary_minus ((kind, body) : mt) : CST.unary_minus =
+let trans_uninterpreted ((kind, body) : mt) : CST.uninterpreted =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -1792,12 +1787,7 @@ let trans_empty_statement ((kind, body) : mt) : CST.empty_statement =
   | Children _ -> assert false
 
 
-let trans_string_array_start ((kind, body) : mt) : CST.string_array_start =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-let trans_true_ ((kind, body) : mt) : CST.true_ =
+let trans_string_content ((kind, body) : mt) : CST.string_content =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -1819,11 +1809,6 @@ let trans_global_variable ((kind, body) : mt) : CST.global_variable =
   | Children _ -> assert false
 
 
-let trans_uninterpreted ((kind, body) : mt) : CST.uninterpreted =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
 let trans_imm_tok_colon ((kind, body) : mt) : CST.imm_tok_colon =
   match body with
   | Leaf v -> v
@@ -1844,7 +1829,7 @@ let trans_escape_sequence ((kind, body) : mt) : CST.escape_sequence =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_symbol_array_start ((kind, body) : mt) : CST.symbol_array_start =
+let trans_symbol_start ((kind, body) : mt) : CST.symbol_start =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -1864,6 +1849,16 @@ let trans_hash_key_symbol ((kind, body) : mt) : CST.hash_key_symbol =
   | Leaf v -> v
   | Children _ -> assert false
 
+let trans_simple_symbol ((kind, body) : mt) : CST.simple_symbol =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_unary_minus ((kind, body) : mt) : CST.unary_minus =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
 let trans_character ((kind, body) : mt) : CST.character =
   match body with
   | Leaf v -> v
@@ -1874,7 +1869,38 @@ let trans_imm_tok_coloncolon ((kind, body) : mt) : CST.imm_tok_coloncolon =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_regex_start ((kind, body) : mt) : CST.regex_start =
+let trans_self ((kind, body) : mt) : CST.self =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_pat_3d340f6 ((kind, body) : mt) : CST.pat_3d340f6 =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_subshell_start ((kind, body) : mt) : CST.subshell_start =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+
+let trans_imm_tok_lpar ((kind, body) : mt) : CST.imm_tok_lpar =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_true_ ((kind, body) : mt) : CST.true_ =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_string_start ((kind, body) : mt) : CST.string_start =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_string_array_start ((kind, body) : mt) : CST.string_array_start =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -1999,34 +2025,7 @@ let trans_operator ((kind, body) : mt) : CST.operator =
       )
   | Leaf _ -> assert false
 
-let trans_string_start ((kind, body) : mt) : CST.string_start =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-
-let trans_imm_tok_lpar ((kind, body) : mt) : CST.imm_tok_lpar =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-let trans_string_end ((kind, body) : mt) : CST.string_end =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-let trans_splat_star ((kind, body) : mt) : CST.splat_star =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-
-let trans_simple_symbol ((kind, body) : mt) : CST.simple_symbol =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
-let trans_constant ((kind, body) : mt) : CST.constant =
+let trans_regex_start ((kind, body) : mt) : CST.regex_start =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -2036,12 +2035,12 @@ let trans_singleton_class_left_angle_left_langle ((kind, body) : mt) : CST.singl
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_string_content ((kind, body) : mt) : CST.string_content =
+let trans_constant ((kind, body) : mt) : CST.constant =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_self ((kind, body) : mt) : CST.self =
+let trans_string_end ((kind, body) : mt) : CST.string_end =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -2051,12 +2050,12 @@ let trans_class_variable ((kind, body) : mt) : CST.class_variable =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_pat_3d340f6 ((kind, body) : mt) : CST.pat_3d340f6 =
+let trans_instance_variable ((kind, body) : mt) : CST.instance_variable =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_instance_variable ((kind, body) : mt) : CST.instance_variable =
+let trans_splat_star ((kind, body) : mt) : CST.splat_star =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -2081,19 +2080,6 @@ let trans_hash_splat_parameter ((kind, body) : mt) : CST.hash_splat_parameter =
             Run.opt
               (fun v -> trans_identifier (Run.matcher_token v))
               v1
-          )
-      | _ -> assert false
-      )
-  | Leaf _ -> assert false
-
-let trans_setter ((kind, body) : mt) : CST.setter =
-  match body with
-  | Children v ->
-      (match v with
-      | Seq [v0; v1] ->
-          (
-            trans_identifier (Run.matcher_token v0),
-            Run.trans_token (Run.matcher_token v1)
           )
       | _ -> assert false
       )
@@ -2127,6 +2113,19 @@ let trans_splat_parameter ((kind, body) : mt) : CST.splat_parameter =
       )
   | Leaf _ -> assert false
 
+let trans_setter ((kind, body) : mt) : CST.setter =
+  match body with
+  | Children v ->
+      (match v with
+      | Seq [v0; v1] ->
+          (
+            trans_identifier (Run.matcher_token v0),
+            Run.trans_token (Run.matcher_token v1)
+          )
+      | _ -> assert false
+      )
+  | Leaf _ -> assert false
+
 let trans_rational ((kind, body) : mt) : CST.rational =
   match body with
   | Children v ->
@@ -2146,6 +2145,22 @@ let trans_rational ((kind, body) : mt) : CST.rational =
             )
             ,
             Run.trans_token (Run.matcher_token v1)
+          )
+      | _ -> assert false
+      )
+  | Leaf _ -> assert false
+
+let trans_terminator ((kind, body) : mt) : CST.terminator =
+  match body with
+  | Children v ->
+      (match v with
+      | Alt (0, v) ->
+          `Line_brk (
+            trans_line_break (Run.matcher_token v)
+          )
+      | Alt (1, v) ->
+          `SEMI (
+            Run.trans_token (Run.matcher_token v)
           )
       | _ -> assert false
       )
@@ -2180,22 +2195,6 @@ let trans_unary_literal ((kind, body) : mt) : CST.unary_literal =
                 )
             | _ -> assert false
             )
-          )
-      | _ -> assert false
-      )
-  | Leaf _ -> assert false
-
-let trans_terminator ((kind, body) : mt) : CST.terminator =
-  match body with
-  | Children v ->
-      (match v with
-      | Alt (0, v) ->
-          `Line_brk (
-            trans_line_break (Run.matcher_token v)
-          )
-      | Alt (1, v) ->
-          `SEMI (
-            Run.trans_token (Run.matcher_token v)
           )
       | _ -> assert false
       )
