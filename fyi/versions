@@ -1,6 +1,6 @@
 File: semgrep-grammars/src/tree-sitter-ruby/LICENSE
 Git repo name: tree-sitter-ruby
-Latest commit in repo: 206c7077164372c596ffa8eaadb9435c28941364
+Latest commit in repo: f257f3f57833d584050336921773738a3fd8ca22
 Last change in file:
   commit 1fea099237d85381ad99cf4cab63c75e341715a6
   Author: Rob Rix <rob.rix@github.com>
@@ -10,7 +10,7 @@ Last change in file:
 ---
 File: semgrep-grammars/src/tree-sitter-ruby/grammar.js
 Git repo name: tree-sitter-ruby
-Latest commit in repo: 206c7077164372c596ffa8eaadb9435c28941364
+Latest commit in repo: f257f3f57833d584050336921773738a3fd8ca22
 Last change in file:
   commit c6009bf2c5afa9595413836ade5c589e0674cac9
   Author: Arthur Baars <aibaars@github.com>
@@ -20,7 +20,7 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-ruby/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: e3d08f10f24a29134d65ab519dcc04eec261047b
+Latest commit in repo: cb2994f92c67452aaef57bc70e09d3ca806ad025
 Last change in file:
   commit d98163ef5d8396efda2e59e6f9a7c9d7ed2d407f
   Author: Emma Jin <emjin@users.noreply.github.com>

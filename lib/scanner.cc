@@ -247,8 +247,18 @@ struct Scanner {
           }
           break;
         default:
-          if (crossed_newline && lexer->lookahead != '.' && lexer->lookahead != '&' && lexer->lookahead != '#') {
-            lexer->result_symbol = LINE_BREAK;
+          if (crossed_newline) {
+            if (lexer->lookahead != '.' && lexer->lookahead != '&' && lexer->lookahead != '#') {
+              lexer->result_symbol = LINE_BREAK;
+            } else if (lexer->lookahead == '.') {
+              // Don't return LINE_BREAK for the call operator (`.`) but do return one for range operators (`..` and `...`)
+              advance(lexer);
+              if (!lexer->eof(lexer) && lexer->lookahead == '.') {
+                lexer->result_symbol = LINE_BREAK;
+              } else {
+                return false;
+              }
+            }
           }
           return true;
       }
