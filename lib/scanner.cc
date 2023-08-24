@@ -1,3 +1,6 @@
+//INVARIANT: THIS SHOULD BE ALMOST EXACTLY THE SAME FILE THAN
+//../../tree-sitter-ruby/src/scanner.cc EXCEPT FOR A FEW SEMGREP-SPECIFIC
+//EXTENSIONS
 // auto-formatted based on Google-style with 2 space indentation
 #include <tree_sitter/parser.h>
 
@@ -46,6 +49,9 @@ enum TokenType {
   BINARY_STAR_STAR,
   ELEMENT_REFERENCE_BRACKET,
   SHORT_INTERPOLATION,
+
+  // sgrep-ext:
+  SEMGREP_ELLIPSIS,
 
   NONE
 };
@@ -866,6 +872,52 @@ struct Scanner {
       return true;
 
     switch (lexer->lookahead) {
+      // sgrep-ext:
+      /* Parsing Semgrep ellipses is hard, because Ruby permits range expressions
+         of the form e1 ... e2, which denotes some kind of range from e1 to e2.
+         This means that if you had something like:
+
+         foo()
+         ...
+         bar()
+
+         this is tempted to be parsed as a range expression spanning multiple lines,
+         rather than three statements, the middle of which is an ellipsis.
+
+         We may also have instances of valid range expressions like 1...2 which should
+         not be parsed as Semgrep ellipses.
+
+         To be able to solve this problem, we are going to use a little more power at
+         the lexing stage, and try to lex any Semgrep ellipses slightly differently.
+         In particular, our criteria for a Semgrep ellipsis will be that it must have
+         a newline (modulo whitespace) following it, since Ruby is a language delimited
+         by newlines.
+
+         This token will just solve the hard statement cases for us. See grammar.js for
+         the other cases for Semgrep ellipses.
+       */
+      case '.':
+        advance(lexer);
+        if (lexer->lookahead == '.') {
+          advance(lexer);
+          if (lexer->lookahead == '.') {
+            advance(lexer);
+            if (lexer->lookahead == '\n') {
+              lexer->result_symbol = SEMGREP_ELLIPSIS;
+              return true;
+            }
+            while (iswspace(lexer->lookahead)) {
+              if (lexer->lookahead == '\n') {
+                lexer->result_symbol = SEMGREP_ELLIPSIS;
+                return true;
+              }
+              advance(lexer);
+            }
+          }
+        }
+        return false;
+        break;
+
       case '&':
         if (valid_symbols[BLOCK_AMPERSAND]) {
           advance(lexer);
