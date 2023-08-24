@@ -280,7 +280,9 @@ type numeric = [
     )
 ]
 
-type anon_choice_call__23b9492 = [
+type alias = (Token.t (* "alias" *) * method_name * method_name)
+
+and anon_choice_call__23b9492 = [
     `Call_ of call_
   | `Choice_var of anon_choice_var_2a392d7
 ]
@@ -439,6 +441,13 @@ and assignment = [
 and bare_parameters = (
     simple_formal_parameter
   * (Token.t (* "," *) * formal_parameter) list (* zero or more *)
+)
+
+and begin_block = (
+    Token.t (* "BEGIN" *)
+  * Token.t (* "{" *)
+  * block_body option
+  * Token.t (* "}" *)
 )
 
 and binary = [
@@ -640,6 +649,13 @@ and do_block = (
 
 and else_ = (Token.t (* "else" *) * terminator option * block_body option)
 
+and end_block = (
+    Token.t (* "END" *)
+  * Token.t (* "{" *)
+  * block_body option
+  * Token.t (* "}" *)
+)
+
 and exception_variable = (Token.t (* "=>" *) * lhs)
 
 and exceptions = (
@@ -733,6 +749,8 @@ and hash_pattern_body = [
 ]
 
 and hash_splat_argument = (hash_splat_star_star (*tok*) * arg option)
+
+and if_modifier = (statement * Token.t (* "if" *) * expression)
 
 and in_ = (Token.t (* "in" *) * arg)
 
@@ -1086,6 +1104,8 @@ and regex = (
   * string_end (*tok*)
 )
 
+and rescue_modifier = (statement * Token.t (* "rescue" *) * expression)
+
 and return_command = (Token.t (* "return" *) * command_argument_list)
 
 and right_assignment_list = (
@@ -1115,30 +1135,20 @@ and simple_formal_parameter = [
 and splat_argument = (splat_star (*tok*) * arg option)
 
 and statement = [
-    `Undef of (
-        Token.t (* "undef" *)
-      * method_name
-      * (Token.t (* "," *) * method_name) list (* zero or more *)
-    )
-  | `Alias of (Token.t (* "alias" *) * method_name * method_name)
-  | `If_modi of (statement * Token.t (* "if" *) * expression)
-  | `Unless_modi of (statement * Token.t (* "unless" *) * expression)
-  | `While_modi of (statement * Token.t (* "while" *) * expression)
-  | `Until_modi of (statement * Token.t (* "until" *) * expression)
-  | `Rescue_modi of (statement * Token.t (* "rescue" *) * expression)
-  | `Begin_blk of (
-        Token.t (* "BEGIN" *)
-      * Token.t (* "{" *)
-      * block_body option
-      * Token.t (* "}" *)
-    )
-  | `End_blk of (
-        Token.t (* "END" *)
-      * Token.t (* "{" *)
-      * block_body option
-      * Token.t (* "}" *)
-    )
-  | `Exp of expression
+    `Choice_undef of [
+        `Undef of undef
+      | `Alias of alias
+      | `If_modi of if_modifier
+      | `Unless_modi of unless_modifier
+      | `While_modi of while_modifier
+      | `Until_modi of until_modifier
+      | `Rescue_modi of rescue_modifier
+      | `Begin_blk of begin_block
+      | `End_blk of end_block
+      | `Exp of expression
+    ]
+  | `DOTDOTDOT of Token.t (* "..." *)
+  | `Semg_ellips_foll_by_nl of semgrep_ellipsis_followed_by_newline (*tok*)
 ]
 
 and statements = [
@@ -1208,12 +1218,24 @@ and unary = [
   | `Choice_BANG_arg of (anon_choice_BANG_b88b9c5 * arg)
 ]
 
+and undef = (
+    Token.t (* "undef" *)
+  * method_name
+  * (Token.t (* "," *) * method_name) list (* zero or more *)
+)
+
+and unless_modifier = (statement * Token.t (* "unless" *) * expression)
+
+and until_modifier = (statement * Token.t (* "until" *) * expression)
+
 and when_ = (
     Token.t (* "when" *)
   * pattern
   * (Token.t (* "," *) * pattern) list (* zero or more *)
   * anon_choice_term_b9e1843
 )
+
+and while_modifier = (statement * Token.t (* "while" *) * expression)
 
 and yield_command = (Token.t (* "yield" *) * command_argument_list)
 
@@ -1275,10 +1297,6 @@ type unary_literal (* inlined *) = (
   * simple_numeric
 )
 
-type alias (* inlined *) = (
-    Token.t (* "alias" *) * method_name * method_name
-)
-
 type alternative_pattern (* inlined *) = (
     pattern_expr_basic
   * (Token.t (* "|" *) * pattern_expr_basic) list (* one or more *)
@@ -1299,13 +1317,6 @@ type begin_ (* inlined *) = (
   * terminator option
   * body_statement option
   * Token.t (* "end" *)
-)
-
-type begin_block (* inlined *) = (
-    Token.t (* "BEGIN" *)
-  * Token.t (* "{" *)
-  * block_body option
-  * Token.t (* "}" *)
 )
 
 type block_argument (* inlined *) = (block_ampersand (*tok*) * arg option)
@@ -1372,13 +1383,6 @@ type elsif (* inlined *) = (
   * anon_choice_else_4cfa13b option
 )
 
-type end_block (* inlined *) = (
-    Token.t (* "END" *)
-  * Token.t (* "{" *)
-  * block_body option
-  * Token.t (* "}" *)
-)
-
 type ensure (* inlined *) = (Token.t (* "ensure" *) * block_body option)
 
 type expression_reference_pattern (* inlined *) = (
@@ -1410,10 +1414,6 @@ type if_ (* inlined *) = (
 )
 
 type if_guard (* inlined *) = (Token.t (* "if" *) * expression)
-
-type if_modifier (* inlined *) = (
-    statement * Token.t (* "if" *) * expression
-)
 
 type keyword_parameter (* inlined *) = (
     identifier (*tok*)
@@ -1459,10 +1459,6 @@ type rescue (* inlined *) = (
   * anon_choice_term_b9e1843
 )
 
-type rescue_modifier (* inlined *) = (
-    statement * Token.t (* "rescue" *) * expression
-)
-
 type rescue_modifier_arg (* inlined *) = (arg * Token.t (* "rescue" *) * arg)
 
 type rescue_modifier_expression (* inlined *) = (
@@ -1496,12 +1492,6 @@ type singleton_method (* inlined *) = (
 
 type unary_minus_pow (* inlined *) = (unary_minus_num (*tok*) * pow)
 
-type undef (* inlined *) = (
-    Token.t (* "undef" *)
-  * method_name
-  * (Token.t (* "," *) * method_name) list (* zero or more *)
-)
-
 type unless (* inlined *) = (
     Token.t (* "unless" *)
   * statement
@@ -1512,21 +1502,9 @@ type unless (* inlined *) = (
 
 type unless_guard (* inlined *) = (Token.t (* "unless" *) * expression)
 
-type unless_modifier (* inlined *) = (
-    statement * Token.t (* "unless" *) * expression
-)
-
 type until (* inlined *) = (Token.t (* "until" *) * statement * do_)
 
-type until_modifier (* inlined *) = (
-    statement * Token.t (* "until" *) * expression
-)
-
 type while_ (* inlined *) = (Token.t (* "while" *) * statement * do_)
-
-type while_modifier (* inlined *) = (
-    statement * Token.t (* "while" *) * expression
-)
 
 type yield (* inlined *) = (Token.t (* "yield" *) * argument_list option)
 

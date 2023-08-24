@@ -20,11 +20,11 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-ruby/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: e49fb6e911835d8c67f3b7c1f36fdd2b75d04850
+Latest commit in repo: 280d70d0841815950fad3b9c9293d6285185398b
 Last change in file:
-  commit 3413f29f0e1738bd228c5ab71a1c1ed05a79c462
+  commit 280d70d0841815950fad3b9c9293d6285185398b
   Author: brandonspark <wu.brandonj@gmail.com>
-  Date:   Wed Aug 23 13:27:37 2023 -0700
+  Date:   Thu Aug 24 13:12:01 2023 -0700
   
-      more more comments
+      fix interpolations
 ---

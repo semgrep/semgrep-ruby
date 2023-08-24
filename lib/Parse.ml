@@ -2108,16 +2108,20 @@ let children_regexps : (string * Run.exp option) list = [
   "statement",
   Some (
     Alt [|
-      Token (Name "undef");
-      Token (Name "alias");
-      Token (Name "if_modifier");
-      Token (Name "unless_modifier");
-      Token (Name "while_modifier");
-      Token (Name "until_modifier");
-      Token (Name "rescue_modifier");
-      Token (Name "begin_block");
-      Token (Name "end_block");
-      Token (Name "expression");
+      Alt [|
+        Token (Name "undef");
+        Token (Name "alias");
+        Token (Name "if_modifier");
+        Token (Name "unless_modifier");
+        Token (Name "while_modifier");
+        Token (Name "until_modifier");
+        Token (Name "rescue_modifier");
+        Token (Name "begin_block");
+        Token (Name "end_block");
+        Token (Name "expression");
+      |];
+      Token (Literal "...");
+      Token (Name "semgrep_ellipsis_followed_by_newline");
     |];
   );
   "statements",
@@ -7440,44 +7444,58 @@ and trans_statement ((kind, body) : mt) : CST.statement =
   | Children v ->
       (match v with
       | Alt (0, v) ->
-          `Undef (
-            trans_undef (Run.matcher_token v)
+          `Choice_undef (
+            (match v with
+            | Alt (0, v) ->
+                `Undef (
+                  trans_undef (Run.matcher_token v)
+                )
+            | Alt (1, v) ->
+                `Alias (
+                  trans_alias (Run.matcher_token v)
+                )
+            | Alt (2, v) ->
+                `If_modi (
+                  trans_if_modifier (Run.matcher_token v)
+                )
+            | Alt (3, v) ->
+                `Unless_modi (
+                  trans_unless_modifier (Run.matcher_token v)
+                )
+            | Alt (4, v) ->
+                `While_modi (
+                  trans_while_modifier (Run.matcher_token v)
+                )
+            | Alt (5, v) ->
+                `Until_modi (
+                  trans_until_modifier (Run.matcher_token v)
+                )
+            | Alt (6, v) ->
+                `Rescue_modi (
+                  trans_rescue_modifier (Run.matcher_token v)
+                )
+            | Alt (7, v) ->
+                `Begin_blk (
+                  trans_begin_block (Run.matcher_token v)
+                )
+            | Alt (8, v) ->
+                `End_blk (
+                  trans_end_block (Run.matcher_token v)
+                )
+            | Alt (9, v) ->
+                `Exp (
+                  trans_expression (Run.matcher_token v)
+                )
+            | _ -> assert false
+            )
           )
       | Alt (1, v) ->
-          `Alias (
-            trans_alias (Run.matcher_token v)
+          `DOTDOTDOT (
+            Run.trans_token (Run.matcher_token v)
           )
       | Alt (2, v) ->
-          `If_modi (
-            trans_if_modifier (Run.matcher_token v)
-          )
-      | Alt (3, v) ->
-          `Unless_modi (
-            trans_unless_modifier (Run.matcher_token v)
-          )
-      | Alt (4, v) ->
-          `While_modi (
-            trans_while_modifier (Run.matcher_token v)
-          )
-      | Alt (5, v) ->
-          `Until_modi (
-            trans_until_modifier (Run.matcher_token v)
-          )
-      | Alt (6, v) ->
-          `Rescue_modi (
-            trans_rescue_modifier (Run.matcher_token v)
-          )
-      | Alt (7, v) ->
-          `Begin_blk (
-            trans_begin_block (Run.matcher_token v)
-          )
-      | Alt (8, v) ->
-          `End_blk (
-            trans_end_block (Run.matcher_token v)
-          )
-      | Alt (9, v) ->
-          `Exp (
-            trans_expression (Run.matcher_token v)
+          `Semg_ellips_foll_by_nl (
+            trans_semgrep_ellipsis_followed_by_newline (Run.matcher_token v)
           )
       | _ -> assert false
       )
