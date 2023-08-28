@@ -20,11 +20,11 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-ruby/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: d0ed7071754cf499160aba660fdc84e551b59ae4
+Latest commit in repo: 80decd114ae4f13d3399fb5a44068420e009cc1c
 Last change in file:
-  commit d0ed7071754cf499160aba660fdc84e551b59ae4
+  commit 80decd114ae4f13d3399fb5a44068420e009cc1c
   Author: brandonspark <wu.brandonj@gmail.com>
-  Date:   Fri Aug 25 10:16:01 2023 -0700
+  Date:   Mon Aug 28 09:48:40 2023 -0700
   
-      allow ellipses in more places
+      fix range vs command call parsing ambiguity
 ---

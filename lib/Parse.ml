@@ -42,7 +42,6 @@ let children_regexps : (string * Run.exp option) list = [
   "constant_suffix_", None;
   "element_reference_bracket", None;
   "symbol_start", None;
-  "unary_minus", None;
   "subshell_start", None;
   "hash_splat_star_star", None;
   "short_interpolation", None;
@@ -63,14 +62,14 @@ let children_regexps : (string * Run.exp option) list = [
   "false", None;
   "heredoc_beginning", None;
   "encoding", None;
-  "unary_minus_num", None;
+  "unary_minus", None;
   "imm_tok_colon", None;
   "semgrep_metavariable", None;
   "no_line_break", None;
   "pat_74d21aa", None;
   "pat_3d340f6", None;
   "hash_key_symbol", None;
-  "true", None;
+  "tok_prec_p1000_dotdotdot_comma", None;
   "operator",
   Some (
     Alt [|
@@ -116,15 +115,17 @@ let children_regexps : (string * Run.exp option) list = [
   "imm_tok_ri", None;
   "imm_tok_lbrack", None;
   "block_ampersand", None;
-  "uninterpreted", None;
+  "unary_minus_num", None;
   "singleton_class_left_angle_left_langle", None;
   "identifier", None;
   "regex_start", None;
   "imm_tok_coloncolon", None;
+  "uninterpreted", None;
   "imm_tok_eq", None;
   "imm_tok_r", None;
   "identifier_suffix_", None;
   "semgrep_ellipsis_followed_by_newline", None;
+  "true", None;
   "hash_splat_nil",
   Some (
     Seq [
@@ -921,15 +922,27 @@ let children_regexps : (string * Run.exp option) list = [
   );
   "command_argument_list",
   Some (
-    Seq [
-      Token (Name "argument");
-      Repeat (
-        Seq [
-          Token (Literal ",");
-          Token (Name "argument");
-        ];
-      );
-    ];
+    Alt [|
+      Seq [
+        Token (Name "tok_prec_p1000_dotdotdot_comma");
+        Token (Name "argument");
+        Repeat (
+          Seq [
+            Token (Literal ",");
+            Token (Name "argument");
+          ];
+        );
+      ];
+      Seq [
+        Token (Name "argument");
+        Repeat (
+          Seq [
+            Token (Literal ",");
+            Token (Name "argument");
+          ];
+        );
+      ];
+    |];
   );
   "command_assignment",
   Some (
@@ -2123,19 +2136,16 @@ let children_regexps : (string * Run.exp option) list = [
   "statement",
   Some (
     Alt [|
-      Alt [|
-        Token (Name "undef");
-        Token (Name "alias");
-        Token (Name "if_modifier");
-        Token (Name "unless_modifier");
-        Token (Name "while_modifier");
-        Token (Name "until_modifier");
-        Token (Name "rescue_modifier");
-        Token (Name "begin_block");
-        Token (Name "end_block");
-        Token (Name "expression");
-      |];
-      Token (Name "semgrep_ellipsis_followed_by_newline");
+      Token (Name "undef");
+      Token (Name "alias");
+      Token (Name "if_modifier");
+      Token (Name "unless_modifier");
+      Token (Name "while_modifier");
+      Token (Name "until_modifier");
+      Token (Name "rescue_modifier");
+      Token (Name "begin_block");
+      Token (Name "end_block");
+      Token (Name "expression");
     |];
   );
   "statements",
@@ -2467,11 +2477,6 @@ let trans_symbol_start ((kind, body) : mt) : CST.symbol_start =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_unary_minus ((kind, body) : mt) : CST.unary_minus =
-  match body with
-  | Leaf v -> v
-  | Children _ -> assert false
-
 let trans_subshell_start ((kind, body) : mt) : CST.subshell_start =
   match body with
   | Leaf v -> v
@@ -2573,7 +2578,7 @@ let trans_encoding ((kind, body) : mt) : CST.encoding =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_unary_minus_num ((kind, body) : mt) : CST.unary_minus_num =
+let trans_unary_minus ((kind, body) : mt) : CST.unary_minus =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -2608,7 +2613,7 @@ let trans_hash_key_symbol ((kind, body) : mt) : CST.hash_key_symbol =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_true_ ((kind, body) : mt) : CST.true_ =
+let trans_tok_prec_p1000_dotdotdot_comma ((kind, body) : mt) : CST.tok_prec_p1000_dotdotdot_comma =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -2793,7 +2798,7 @@ let trans_block_ampersand ((kind, body) : mt) : CST.block_ampersand =
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_uninterpreted ((kind, body) : mt) : CST.uninterpreted =
+let trans_unary_minus_num ((kind, body) : mt) : CST.unary_minus_num =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -2818,6 +2823,11 @@ let trans_imm_tok_coloncolon ((kind, body) : mt) : CST.imm_tok_coloncolon =
   | Leaf v -> v
   | Children _ -> assert false
 
+let trans_uninterpreted ((kind, body) : mt) : CST.uninterpreted =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
 
 let trans_imm_tok_eq ((kind, body) : mt) : CST.imm_tok_eq =
   match body with
@@ -2835,6 +2845,11 @@ let trans_identifier_suffix_ ((kind, body) : mt) : CST.identifier_suffix_ =
   | Children _ -> assert false
 
 let trans_semgrep_ellipsis_followed_by_newline ((kind, body) : mt) : CST.semgrep_ellipsis_followed_by_newline =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_true_ ((kind, body) : mt) : CST.true_ =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -4700,21 +4715,50 @@ and trans_command_argument_list ((kind, body) : mt) : CST.command_argument_list 
   match body with
   | Children v ->
       (match v with
-      | Seq [v0; v1] ->
-          (
-            trans_argument (Run.matcher_token v0),
-            Run.repeat
-              (fun v ->
-                (match v with
-                | Seq [v0; v1] ->
-                    (
-                      Run.trans_token (Run.matcher_token v0),
-                      trans_argument (Run.matcher_token v1)
+      | Alt (0, v) ->
+          `Tok_prec_p1000_dotd_comma_arg_rep_COMMA_arg (
+            (match v with
+            | Seq [v0; v1; v2] ->
+                (
+                  trans_tok_prec_p1000_dotdotdot_comma (Run.matcher_token v0),
+                  trans_argument (Run.matcher_token v1),
+                  Run.repeat
+                    (fun v ->
+                      (match v with
+                      | Seq [v0; v1] ->
+                          (
+                            Run.trans_token (Run.matcher_token v0),
+                            trans_argument (Run.matcher_token v1)
+                          )
+                      | _ -> assert false
+                      )
                     )
-                | _ -> assert false
+                    v2
                 )
-              )
-              v1
+            | _ -> assert false
+            )
+          )
+      | Alt (1, v) ->
+          `Arg_rep_COMMA_arg (
+            (match v with
+            | Seq [v0; v1] ->
+                (
+                  trans_argument (Run.matcher_token v0),
+                  Run.repeat
+                    (fun v ->
+                      (match v with
+                      | Seq [v0; v1] ->
+                          (
+                            Run.trans_token (Run.matcher_token v0),
+                            trans_argument (Run.matcher_token v1)
+                          )
+                      | _ -> assert false
+                      )
+                    )
+                    v1
+                )
+            | _ -> assert false
+            )
           )
       | _ -> assert false
       )
@@ -7503,54 +7547,44 @@ and trans_statement ((kind, body) : mt) : CST.statement =
   | Children v ->
       (match v with
       | Alt (0, v) ->
-          `Choice_undef (
-            (match v with
-            | Alt (0, v) ->
-                `Undef (
-                  trans_undef (Run.matcher_token v)
-                )
-            | Alt (1, v) ->
-                `Alias (
-                  trans_alias (Run.matcher_token v)
-                )
-            | Alt (2, v) ->
-                `If_modi (
-                  trans_if_modifier (Run.matcher_token v)
-                )
-            | Alt (3, v) ->
-                `Unless_modi (
-                  trans_unless_modifier (Run.matcher_token v)
-                )
-            | Alt (4, v) ->
-                `While_modi (
-                  trans_while_modifier (Run.matcher_token v)
-                )
-            | Alt (5, v) ->
-                `Until_modi (
-                  trans_until_modifier (Run.matcher_token v)
-                )
-            | Alt (6, v) ->
-                `Rescue_modi (
-                  trans_rescue_modifier (Run.matcher_token v)
-                )
-            | Alt (7, v) ->
-                `Begin_blk (
-                  trans_begin_block (Run.matcher_token v)
-                )
-            | Alt (8, v) ->
-                `End_blk (
-                  trans_end_block (Run.matcher_token v)
-                )
-            | Alt (9, v) ->
-                `Exp (
-                  trans_expression (Run.matcher_token v)
-                )
-            | _ -> assert false
-            )
+          `Undef (
+            trans_undef (Run.matcher_token v)
           )
       | Alt (1, v) ->
-          `Semg_ellips_foll_by_nl (
-            trans_semgrep_ellipsis_followed_by_newline (Run.matcher_token v)
+          `Alias (
+            trans_alias (Run.matcher_token v)
+          )
+      | Alt (2, v) ->
+          `If_modi (
+            trans_if_modifier (Run.matcher_token v)
+          )
+      | Alt (3, v) ->
+          `Unless_modi (
+            trans_unless_modifier (Run.matcher_token v)
+          )
+      | Alt (4, v) ->
+          `While_modi (
+            trans_while_modifier (Run.matcher_token v)
+          )
+      | Alt (5, v) ->
+          `Until_modi (
+            trans_until_modifier (Run.matcher_token v)
+          )
+      | Alt (6, v) ->
+          `Rescue_modi (
+            trans_rescue_modifier (Run.matcher_token v)
+          )
+      | Alt (7, v) ->
+          `Begin_blk (
+            trans_begin_block (Run.matcher_token v)
+          )
+      | Alt (8, v) ->
+          `End_blk (
+            trans_end_block (Run.matcher_token v)
+          )
+      | Alt (9, v) ->
+          `Exp (
+            trans_expression (Run.matcher_token v)
           )
       | _ -> assert false
       )

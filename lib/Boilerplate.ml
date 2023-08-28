@@ -133,8 +133,8 @@ let map_float_ (env : env) (tok : CST.float_) =
 let map_escape_sequence (env : env) (tok : CST.escape_sequence) =
   (* escape_sequence *) token env tok
 
-let map_uninterpreted (env : env) (tok : CST.uninterpreted) =
-  (* pattern (.|\s)* *) token env tok
+let map_unary_minus_num (env : env) (tok : CST.unary_minus_num) =
+  (* unary_minus_num *) token env tok
 
 let map_symbol_start (env : env) (tok : CST.symbol_start) =
   (* symbol_start *) token env tok
@@ -155,6 +155,9 @@ let map_hash_splat_nil (env : env) ((v1, v2) : CST.hash_splat_nil) =
 
 let map_constant_suffix_ (env : env) (tok : CST.constant_suffix_) =
   (* constant_suffix_ *) token env tok
+
+let map_tok_prec_p1000_dotdotdot_comma (env : env) (tok : CST.tok_prec_p1000_dotdotdot_comma) =
+  (* tok_prec_p1000_dotdotdot_comma *) token env tok
 
 let map_identifier (env : env) (tok : CST.identifier) =
   (* identifier *) token env tok
@@ -298,11 +301,11 @@ let map_short_interpolation (env : env) (tok : CST.short_interpolation) =
 let map_heredoc_body_start (env : env) (tok : CST.heredoc_body_start) =
   (* heredoc_body_start *) token env tok
 
-let map_unary_minus_num (env : env) (tok : CST.unary_minus_num) =
-  (* unary_minus_num *) token env tok
-
 let map_unary_minus (env : env) (tok : CST.unary_minus) =
   (* unary_minus *) token env tok
+
+let map_uninterpreted (env : env) (tok : CST.uninterpreted) =
+  (* pattern (.|\s)* *) token env tok
 
 let map_identifier_suffix_ (env : env) (tok : CST.identifier_suffix_) =
   (* identifier_suffix_ *) token env tok
@@ -589,13 +592,7 @@ let map_numeric (env : env) (x : CST.numeric) =
     )
   )
 
-let rec map_alias (env : env) ((v1, v2, v3) : CST.alias) =
-  let v1 = (* "alias" *) token env v1 in
-  let v2 = map_method_name env v2 in
-  let v3 = map_method_name env v3 in
-  R.Tuple [v1; v2; v3]
-
-and map_anon_choice_call__23b9492 (env : env) (x : CST.anon_choice_call__23b9492) =
+let rec map_anon_choice_call__23b9492 (env : env) (x : CST.anon_choice_call__23b9492) =
   (match x with
   | `Call_ x -> R.Case ("Call_",
       map_call_ env x
@@ -1026,19 +1023,6 @@ and map_begin_ (env : env) ((v1, v2, v3, v4) : CST.begin_) =
   let v4 = (* "end" *) token env v4 in
   R.Tuple [v1; v2; v3; v4]
 
-and map_begin_block (env : env) ((v1, v2, v3, v4) : CST.begin_block) =
-  let v1 = (* "BEGIN" *) token env v1 in
-  let v2 = (* "{" *) token env v2 in
-  let v3 =
-    (match v3 with
-    | Some x -> R.Option (Some (
-        map_block_body env x
-      ))
-    | None -> R.Option None)
-  in
-  let v4 = (* "}" *) token env v4 in
-  R.Tuple [v1; v2; v3; v4]
-
 and map_binary (env : env) (x : CST.binary) =
   (match x with
   | `Arg_and_arg (v1, v2, v3) -> R.Case ("Arg_and_arg",
@@ -1445,16 +1429,32 @@ and map_class_ (env : env) ((v1, v2, v3, v4, v5) : CST.class_) =
   let v5 = (* "end" *) token env v5 in
   R.Tuple [v1; v2; v3; v4; v5]
 
-and map_command_argument_list (env : env) ((v1, v2) : CST.command_argument_list) =
-  let v1 = map_argument env v1 in
-  let v2 =
-    R.List (List.map (fun (v1, v2) ->
-      let v1 = (* "," *) token env v1 in
+and map_command_argument_list (env : env) (x : CST.command_argument_list) =
+  (match x with
+  | `Tok_prec_p1000_dotd_comma_arg_rep_COMMA_arg (v1, v2, v3) -> R.Case ("Tok_prec_p1000_dotd_comma_arg_rep_COMMA_arg",
+      let v1 = map_tok_prec_p1000_dotdotdot_comma env v1 in
       let v2 = map_argument env v2 in
+      let v3 =
+        R.List (List.map (fun (v1, v2) ->
+          let v1 = (* "," *) token env v1 in
+          let v2 = map_argument env v2 in
+          R.Tuple [v1; v2]
+        ) v3)
+      in
+      R.Tuple [v1; v2; v3]
+    )
+  | `Arg_rep_COMMA_arg (v1, v2) -> R.Case ("Arg_rep_COMMA_arg",
+      let v1 = map_argument env v1 in
+      let v2 =
+        R.List (List.map (fun (v1, v2) ->
+          let v1 = (* "," *) token env v1 in
+          let v2 = map_argument env v2 in
+          R.Tuple [v1; v2]
+        ) v2)
+      in
       R.Tuple [v1; v2]
-    ) v2)
-  in
-  R.Tuple [v1; v2]
+    )
+  )
 
 and map_command_call_with_block (env : env) (x : CST.command_call_with_block) =
   (match x with
@@ -1589,19 +1589,6 @@ and map_else_ (env : env) ((v1, v2, v3) : CST.else_) =
     | None -> R.Option None)
   in
   R.Tuple [v1; v2; v3]
-
-and map_end_block (env : env) ((v1, v2, v3, v4) : CST.end_block) =
-  let v1 = (* "END" *) token env v1 in
-  let v2 = (* "{" *) token env v2 in
-  let v3 =
-    (match v3 with
-    | Some x -> R.Option (Some (
-        map_block_body env x
-      ))
-    | None -> R.Option None)
-  in
-  let v4 = (* "}" *) token env v4 in
-  R.Tuple [v1; v2; v3; v4]
 
 and map_exception_variable (env : env) ((v1, v2) : CST.exception_variable) =
   let v1 = (* "=>" *) token env v1 in
@@ -1898,12 +1885,6 @@ and map_if_ (env : env) ((v1, v2, v3, v4, v5) : CST.if_) =
   in
   let v5 = (* "end" *) token env v5 in
   R.Tuple [v1; v2; v3; v4; v5]
-
-and map_if_modifier (env : env) ((v1, v2, v3) : CST.if_modifier) =
-  let v1 = map_statement env v1 in
-  let v2 = (* "if" *) token env v2 in
-  let v3 = map_expression env v3 in
-  R.Tuple [v1; v2; v3]
 
 and map_in_ (env : env) ((v1, v2) : CST.in_) =
   let v1 = (* "in" *) token env v1 in
@@ -2676,12 +2657,6 @@ and map_regex (env : env) ((v1, v2, v3) : CST.regex) =
   let v3 = (* string_end *) token env v3 in
   R.Tuple [v1; v2; v3]
 
-and map_rescue_modifier (env : env) ((v1, v2, v3) : CST.rescue_modifier) =
-  let v1 = map_statement env v1 in
-  let v2 = (* "rescue" *) token env v2 in
-  let v3 = map_expression env v3 in
-  R.Tuple [v1; v2; v3]
-
 and map_retry (env : env) ((v1, v2) : CST.retry) =
   let v1 = (* "retry" *) token env v1 in
   let v2 =
@@ -2837,42 +2812,82 @@ and map_splat_argument (env : env) ((v1, v2) : CST.splat_argument) =
 
 and map_statement (env : env) (x : CST.statement) =
   (match x with
-  | `Choice_undef x -> R.Case ("Choice_undef",
-      (match x with
-      | `Undef x -> R.Case ("Undef",
-          map_undef env x
-        )
-      | `Alias x -> R.Case ("Alias",
-          map_alias env x
-        )
-      | `If_modi x -> R.Case ("If_modi",
-          map_if_modifier env x
-        )
-      | `Unless_modi x -> R.Case ("Unless_modi",
-          map_unless_modifier env x
-        )
-      | `While_modi x -> R.Case ("While_modi",
-          map_while_modifier env x
-        )
-      | `Until_modi x -> R.Case ("Until_modi",
-          map_until_modifier env x
-        )
-      | `Rescue_modi x -> R.Case ("Rescue_modi",
-          map_rescue_modifier env x
-        )
-      | `Begin_blk x -> R.Case ("Begin_blk",
-          map_begin_block env x
-        )
-      | `End_blk x -> R.Case ("End_blk",
-          map_end_block env x
-        )
-      | `Exp x -> R.Case ("Exp",
-          map_expression env x
-        )
-      )
+  | `Undef (v1, v2, v3) -> R.Case ("Undef",
+      let v1 = (* "undef" *) token env v1 in
+      let v2 = map_method_name env v2 in
+      let v3 =
+        R.List (List.map (fun (v1, v2) ->
+          let v1 = (* "," *) token env v1 in
+          let v2 = map_method_name env v2 in
+          R.Tuple [v1; v2]
+        ) v3)
+      in
+      R.Tuple [v1; v2; v3]
     )
-  | `Semg_ellips_foll_by_nl tok -> R.Case ("Semg_ellips_foll_by_nl",
-      (* semgrep_ellipsis_followed_by_newline *) token env tok
+  | `Alias (v1, v2, v3) -> R.Case ("Alias",
+      let v1 = (* "alias" *) token env v1 in
+      let v2 = map_method_name env v2 in
+      let v3 = map_method_name env v3 in
+      R.Tuple [v1; v2; v3]
+    )
+  | `If_modi (v1, v2, v3) -> R.Case ("If_modi",
+      let v1 = map_statement env v1 in
+      let v2 = (* "if" *) token env v2 in
+      let v3 = map_expression env v3 in
+      R.Tuple [v1; v2; v3]
+    )
+  | `Unless_modi (v1, v2, v3) -> R.Case ("Unless_modi",
+      let v1 = map_statement env v1 in
+      let v2 = (* "unless" *) token env v2 in
+      let v3 = map_expression env v3 in
+      R.Tuple [v1; v2; v3]
+    )
+  | `While_modi (v1, v2, v3) -> R.Case ("While_modi",
+      let v1 = map_statement env v1 in
+      let v2 = (* "while" *) token env v2 in
+      let v3 = map_expression env v3 in
+      R.Tuple [v1; v2; v3]
+    )
+  | `Until_modi (v1, v2, v3) -> R.Case ("Until_modi",
+      let v1 = map_statement env v1 in
+      let v2 = (* "until" *) token env v2 in
+      let v3 = map_expression env v3 in
+      R.Tuple [v1; v2; v3]
+    )
+  | `Rescue_modi (v1, v2, v3) -> R.Case ("Rescue_modi",
+      let v1 = map_statement env v1 in
+      let v2 = (* "rescue" *) token env v2 in
+      let v3 = map_expression env v3 in
+      R.Tuple [v1; v2; v3]
+    )
+  | `Begin_blk (v1, v2, v3, v4) -> R.Case ("Begin_blk",
+      let v1 = (* "BEGIN" *) token env v1 in
+      let v2 = (* "{" *) token env v2 in
+      let v3 =
+        (match v3 with
+        | Some x -> R.Option (Some (
+            map_block_body env x
+          ))
+        | None -> R.Option None)
+      in
+      let v4 = (* "}" *) token env v4 in
+      R.Tuple [v1; v2; v3; v4]
+    )
+  | `End_blk (v1, v2, v3, v4) -> R.Case ("End_blk",
+      let v1 = (* "END" *) token env v1 in
+      let v2 = (* "{" *) token env v2 in
+      let v3 =
+        (match v3 with
+        | Some x -> R.Option (Some (
+            map_block_body env x
+          ))
+        | None -> R.Option None)
+      in
+      let v4 = (* "}" *) token env v4 in
+      R.Tuple [v1; v2; v3; v4]
+    )
+  | `Exp x -> R.Case ("Exp",
+      map_expression env x
     )
   )
 
@@ -3051,18 +3066,6 @@ and map_unary (env : env) (x : CST.unary) =
     )
   )
 
-and map_undef (env : env) ((v1, v2, v3) : CST.undef) =
-  let v1 = (* "undef" *) token env v1 in
-  let v2 = map_method_name env v2 in
-  let v3 =
-    R.List (List.map (fun (v1, v2) ->
-      let v1 = (* "," *) token env v1 in
-      let v2 = map_method_name env v2 in
-      R.Tuple [v1; v2]
-    ) v3)
-  in
-  R.Tuple [v1; v2; v3]
-
 and map_unless (env : env) ((v1, v2, v3, v4, v5) : CST.unless) =
   let v1 = (* "unless" *) token env v1 in
   let v2 = map_statement env v2 in
@@ -3077,22 +3080,10 @@ and map_unless (env : env) ((v1, v2, v3, v4, v5) : CST.unless) =
   let v5 = (* "end" *) token env v5 in
   R.Tuple [v1; v2; v3; v4; v5]
 
-and map_unless_modifier (env : env) ((v1, v2, v3) : CST.unless_modifier) =
-  let v1 = map_statement env v1 in
-  let v2 = (* "unless" *) token env v2 in
-  let v3 = map_expression env v3 in
-  R.Tuple [v1; v2; v3]
-
 and map_until (env : env) ((v1, v2, v3) : CST.until) =
   let v1 = (* "until" *) token env v1 in
   let v2 = map_statement env v2 in
   let v3 = map_do_ env v3 in
-  R.Tuple [v1; v2; v3]
-
-and map_until_modifier (env : env) ((v1, v2, v3) : CST.until_modifier) =
-  let v1 = map_statement env v1 in
-  let v2 = (* "until" *) token env v2 in
-  let v3 = map_expression env v3 in
   R.Tuple [v1; v2; v3]
 
 and map_when_ (env : env) ((v1, v2, v3, v4) : CST.when_) =
@@ -3112,12 +3103,6 @@ and map_while_ (env : env) ((v1, v2, v3) : CST.while_) =
   let v1 = (* "while" *) token env v1 in
   let v2 = map_statement env v2 in
   let v3 = map_do_ env v3 in
-  R.Tuple [v1; v2; v3]
-
-and map_while_modifier (env : env) ((v1, v2, v3) : CST.while_modifier) =
-  let v1 = map_statement env v1 in
-  let v2 = (* "while" *) token env v2 in
-  let v3 = map_expression env v3 in
   R.Tuple [v1; v2; v3]
 
 and map_yield (env : env) ((v1, v2) : CST.yield) =
