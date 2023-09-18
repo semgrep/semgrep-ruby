@@ -1016,6 +1016,11 @@ let children_regexps : (string * Run.exp option) list = [
         Token (Literal "...");
         Token (Name "do_block");
       ];
+      Seq [
+        Token (Name "arg");
+        Token (Literal "...");
+        Token (Name "block");
+      ];
     |];
   );
   "command_operator_assignment",
@@ -4959,6 +4964,18 @@ and trans_command_call_with_block ((kind, body) : mt) : CST.command_call_with_bl
                   trans_arg (Run.matcher_token v0),
                   Run.trans_token (Run.matcher_token v1),
                   trans_do_block (Run.matcher_token v2)
+                )
+            | _ -> assert false
+            )
+          )
+      | Alt (2, v) ->
+          `Arg_DOTDOTDOT_blk (
+            (match v with
+            | Seq [v0; v1; v2] ->
+                (
+                  trans_arg (Run.matcher_token v0),
+                  Run.trans_token (Run.matcher_token v1),
+                  trans_block (Run.matcher_token v2)
                 )
             | _ -> assert false
             )

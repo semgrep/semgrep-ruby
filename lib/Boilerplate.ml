@@ -1480,6 +1480,12 @@ and map_command_call_with_block (env : env) (x : CST.command_call_with_block) =
       let v3 = map_do_block env v3 in
       R.Tuple [v1; v2; v3]
     )
+  | `Arg_DOTDOTDOT_blk (v1, v2, v3) -> R.Case ("Arg_DOTDOTDOT_blk",
+      let v1 = map_arg env v1 in
+      let v2 = (* "..." *) token env v2 in
+      let v3 = map_block env v3 in
+      R.Tuple [v1; v2; v3]
+    )
   )
 
 and map_command_unary (env : env) (x : CST.command_unary) =

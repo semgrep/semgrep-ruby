@@ -646,6 +646,7 @@ and command_call_with_block = [
         )
     ]
   | `Arg_DOTDOTDOT_do_blk of (arg * Token.t (* "..." *) * do_block)
+  | `Arg_DOTDOTDOT_blk of (arg * Token.t (* "..." *) * block)
 ]
 
 and command_unary = [
