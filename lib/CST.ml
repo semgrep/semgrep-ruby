@@ -637,12 +637,15 @@ and command_argument_list = [
 ]
 
 and command_call_with_block = [
-    `Choice_call__cmd_arg_list_blk of (
-        anon_choice_call__23b9492 * command_argument_list * block
-    )
-  | `Choice_call__cmd_arg_list_do_blk of (
-        anon_choice_call__23b9492 * command_argument_list * do_block
-    )
+    `Choice_choice_call__cmd_arg_list_blk of [
+        `Choice_call__cmd_arg_list_blk of (
+            anon_choice_call__23b9492 * command_argument_list * block
+        )
+      | `Choice_call__cmd_arg_list_do_blk of (
+            anon_choice_call__23b9492 * command_argument_list * do_block
+        )
+    ]
+  | `Arg_DOTDOTDOT_do_blk of (arg * Token.t (* "..." *) * do_block)
 ]
 
 and command_unary = [

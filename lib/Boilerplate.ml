@@ -1458,15 +1458,25 @@ and map_command_argument_list (env : env) (x : CST.command_argument_list) =
 
 and map_command_call_with_block (env : env) (x : CST.command_call_with_block) =
   (match x with
-  | `Choice_call__cmd_arg_list_blk (v1, v2, v3) -> R.Case ("Choice_call__cmd_arg_list_blk",
-      let v1 = map_anon_choice_call__23b9492 env v1 in
-      let v2 = map_command_argument_list env v2 in
-      let v3 = map_block env v3 in
-      R.Tuple [v1; v2; v3]
+  | `Choice_choice_call__cmd_arg_list_blk x -> R.Case ("Choice_choice_call__cmd_arg_list_blk",
+      (match x with
+      | `Choice_call__cmd_arg_list_blk (v1, v2, v3) -> R.Case ("Choice_call__cmd_arg_list_blk",
+          let v1 = map_anon_choice_call__23b9492 env v1 in
+          let v2 = map_command_argument_list env v2 in
+          let v3 = map_block env v3 in
+          R.Tuple [v1; v2; v3]
+        )
+      | `Choice_call__cmd_arg_list_do_blk (v1, v2, v3) -> R.Case ("Choice_call__cmd_arg_list_do_blk",
+          let v1 = map_anon_choice_call__23b9492 env v1 in
+          let v2 = map_command_argument_list env v2 in
+          let v3 = map_do_block env v3 in
+          R.Tuple [v1; v2; v3]
+        )
+      )
     )
-  | `Choice_call__cmd_arg_list_do_blk (v1, v2, v3) -> R.Case ("Choice_call__cmd_arg_list_do_blk",
-      let v1 = map_anon_choice_call__23b9492 env v1 in
-      let v2 = map_command_argument_list env v2 in
+  | `Arg_DOTDOTDOT_do_blk (v1, v2, v3) -> R.Case ("Arg_DOTDOTDOT_do_blk",
+      let v1 = map_arg env v1 in
+      let v2 = (* "..." *) token env v2 in
       let v3 = map_do_block env v3 in
       R.Tuple [v1; v2; v3]
     )

@@ -987,26 +987,33 @@ let children_regexps : (string * Run.exp option) list = [
   "command_call_with_block",
   Some (
     Alt [|
-      Seq [
-        Alt [|
-          Token (Name "call_");
+      Alt [|
+        Seq [
           Alt [|
-            Token (Name "variable");
-            Token (Name "function_identifier");
+            Token (Name "call_");
+            Alt [|
+              Token (Name "variable");
+              Token (Name "function_identifier");
+            |];
           |];
-        |];
-        Token (Name "command_argument_list");
-        Token (Name "block");
-      ];
-      Seq [
-        Alt [|
-          Token (Name "call_");
+          Token (Name "command_argument_list");
+          Token (Name "block");
+        ];
+        Seq [
           Alt [|
-            Token (Name "variable");
-            Token (Name "function_identifier");
+            Token (Name "call_");
+            Alt [|
+              Token (Name "variable");
+              Token (Name "function_identifier");
+            |];
           |];
-        |];
-        Token (Name "command_argument_list");
+          Token (Name "command_argument_list");
+          Token (Name "do_block");
+        ];
+      |];
+      Seq [
+        Token (Name "arg");
+        Token (Literal "...");
         Token (Name "do_block");
       ];
     |];
@@ -4873,66 +4880,84 @@ and trans_command_call_with_block ((kind, body) : mt) : CST.command_call_with_bl
   | Children v ->
       (match v with
       | Alt (0, v) ->
-          `Choice_call__cmd_arg_list_blk (
+          `Choice_choice_call__cmd_arg_list_blk (
             (match v with
-            | Seq [v0; v1; v2] ->
-                (
-                  (match v0 with
-                  | Alt (0, v) ->
-                      `Call_ (
-                        trans_call_ (Run.matcher_token v)
-                      )
-                  | Alt (1, v) ->
-                      `Choice_var (
-                        (match v with
+            | Alt (0, v) ->
+                `Choice_call__cmd_arg_list_blk (
+                  (match v with
+                  | Seq [v0; v1; v2] ->
+                      (
+                        (match v0 with
                         | Alt (0, v) ->
-                            `Var (
-                              trans_variable (Run.matcher_token v)
+                            `Call_ (
+                              trans_call_ (Run.matcher_token v)
                             )
                         | Alt (1, v) ->
-                            `Func_id (
-                              trans_function_identifier (Run.matcher_token v)
+                            `Choice_var (
+                              (match v with
+                              | Alt (0, v) ->
+                                  `Var (
+                                    trans_variable (Run.matcher_token v)
+                                  )
+                              | Alt (1, v) ->
+                                  `Func_id (
+                                    trans_function_identifier (Run.matcher_token v)
+                                  )
+                              | _ -> assert false
+                              )
                             )
                         | _ -> assert false
                         )
+                        ,
+                        trans_command_argument_list (Run.matcher_token v1),
+                        trans_block (Run.matcher_token v2)
                       )
                   | _ -> assert false
                   )
-                  ,
-                  trans_command_argument_list (Run.matcher_token v1),
-                  trans_block (Run.matcher_token v2)
+                )
+            | Alt (1, v) ->
+                `Choice_call__cmd_arg_list_do_blk (
+                  (match v with
+                  | Seq [v0; v1; v2] ->
+                      (
+                        (match v0 with
+                        | Alt (0, v) ->
+                            `Call_ (
+                              trans_call_ (Run.matcher_token v)
+                            )
+                        | Alt (1, v) ->
+                            `Choice_var (
+                              (match v with
+                              | Alt (0, v) ->
+                                  `Var (
+                                    trans_variable (Run.matcher_token v)
+                                  )
+                              | Alt (1, v) ->
+                                  `Func_id (
+                                    trans_function_identifier (Run.matcher_token v)
+                                  )
+                              | _ -> assert false
+                              )
+                            )
+                        | _ -> assert false
+                        )
+                        ,
+                        trans_command_argument_list (Run.matcher_token v1),
+                        trans_do_block (Run.matcher_token v2)
+                      )
+                  | _ -> assert false
+                  )
                 )
             | _ -> assert false
             )
           )
       | Alt (1, v) ->
-          `Choice_call__cmd_arg_list_do_blk (
+          `Arg_DOTDOTDOT_do_blk (
             (match v with
             | Seq [v0; v1; v2] ->
                 (
-                  (match v0 with
-                  | Alt (0, v) ->
-                      `Call_ (
-                        trans_call_ (Run.matcher_token v)
-                      )
-                  | Alt (1, v) ->
-                      `Choice_var (
-                        (match v with
-                        | Alt (0, v) ->
-                            `Var (
-                              trans_variable (Run.matcher_token v)
-                            )
-                        | Alt (1, v) ->
-                            `Func_id (
-                              trans_function_identifier (Run.matcher_token v)
-                            )
-                        | _ -> assert false
-                        )
-                      )
-                  | _ -> assert false
-                  )
-                  ,
-                  trans_command_argument_list (Run.matcher_token v1),
+                  trans_arg (Run.matcher_token v0),
+                  Run.trans_token (Run.matcher_token v1),
                   trans_do_block (Run.matcher_token v2)
                 )
             | _ -> assert false
