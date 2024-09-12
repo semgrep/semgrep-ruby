@@ -3160,7 +3160,47 @@ let map_program (env : env) ((v1, v2) : CST.program) =
   in
   R.Tuple [v1; v2]
 
+let map_comment (env : env) (tok : CST.comment) =
+  (* comment *) token env tok
+
+let map_heredoc_body (env : env) ((v1, v2, v3) : CST.heredoc_body) =
+  let v1 = (* heredoc_body_start *) token env v1 in
+  let v2 =
+    R.List (List.map (fun x ->
+      (match x with
+      | `Here_content tok -> R.Case ("Here_content",
+          (* heredoc_content *) token env tok
+        )
+      | `Interp x -> R.Case ("Interp",
+          map_interpolation env x
+        )
+      | `Esc_seq tok -> R.Case ("Esc_seq",
+          (* escape_sequence *) token env tok
+        )
+      )
+    ) v2)
+  in
+  let v3 = (* heredoc_end *) token env v3 in
+  R.Tuple [v1; v2; v3]
+
 let dump_tree root =
   map_program () root
-  |> Tree_sitter_run.Raw_tree.to_string
-  |> print_string
+  |> Tree_sitter_run.Raw_tree.to_channel stdout
+
+let map_extra (env : env) (x : CST.extra) =
+  match x with
+  | Comment (_loc, x) -> ("comment", "comment", map_comment env x)
+  | Heredoc_body (_loc, x) -> ("heredoc_body", "heredoc_body", map_heredoc_body env x)
+
+let dump_extras (extras : CST.extras) =
+  List.iter (fun extra ->
+    let ts_rule_name, ocaml_type_name, raw_tree = map_extra () extra in
+    let details =
+      if ocaml_type_name <> ts_rule_name then
+        Printf.sprintf " (OCaml type '%s')" ocaml_type_name
+      else
+        ""
+    in
+    Printf.printf "%s%s:\n" ts_rule_name details;
+    Tree_sitter_run.Raw_tree.to_channel stdout raw_tree
+  ) extras

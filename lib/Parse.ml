@@ -56,6 +56,7 @@ let children_regexps : (string * Run.exp option) list = [
   "binary_star", None;
   "empty_statement", None;
   "float", None;
+  "heredoc_end", None;
   "string_array_start", None;
   "semgrep_metavariable", None;
   "tok_pat_3fee85b_pat_f7bc484_pat_38b534e", None;
@@ -105,6 +106,7 @@ let children_regexps : (string * Run.exp option) list = [
       Token (Literal "`");
     |];
   );
+  "heredoc_body_start", None;
   "splat_star", None;
   "instance_variable", None;
   "forward_argument", None;
@@ -121,12 +123,14 @@ let children_regexps : (string * Run.exp option) list = [
   "uninterpreted", None;
   "imm_tok_coloncolon", None;
   "unary_minus_num", None;
+  "comment", None;
   "imm_tok_eq", None;
   "imm_tok_r", None;
   "identifier_suffix_", None;
   "semgrep_ellipsis", None;
   "symbol_start", None;
   "tok_prec_p1000_dotdotdot_comma", None;
+  "heredoc_content", None;
   "hash_splat_nil",
   Some (
     Seq [
@@ -2448,6 +2452,20 @@ let children_regexps : (string * Run.exp option) list = [
       );
     ];
   );
+  "heredoc_body",
+  Some (
+    Seq [
+      Token (Name "heredoc_body_start");
+      Repeat (
+        Alt [|
+          Token (Name "heredoc_content");
+          Token (Name "interpolation");
+          Token (Name "escape_sequence");
+        |];
+      );
+      Token (Name "heredoc_end");
+    ];
+  );
 ]
 
 let trans_escape_sequence ((kind, body) : mt) : CST.escape_sequence =
@@ -2560,6 +2578,10 @@ let trans_float_ ((kind, body) : mt) : CST.float_ =
   | Leaf v -> v
   | Children _ -> assert false
 
+let trans_heredoc_end ((kind, body) : mt) : CST.heredoc_end =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
 
 let trans_string_array_start ((kind, body) : mt) : CST.string_array_start =
   match body with
@@ -2760,6 +2782,10 @@ let trans_operator ((kind, body) : mt) : CST.operator =
       )
   | Leaf _ -> assert false
 
+let trans_heredoc_body_start ((kind, body) : mt) : CST.heredoc_body_start =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
 
 let trans_splat_star ((kind, body) : mt) : CST.splat_star =
   match body with
@@ -2841,6 +2867,10 @@ let trans_unary_minus_num ((kind, body) : mt) : CST.unary_minus_num =
   | Leaf v -> v
   | Children _ -> assert false
 
+let trans_comment ((kind, body) : mt) : CST.comment =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
 
 let trans_imm_tok_eq ((kind, body) : mt) : CST.imm_tok_eq =
   match body with
@@ -2872,6 +2902,10 @@ let trans_tok_prec_p1000_dotdotdot_comma ((kind, body) : mt) : CST.tok_prec_p100
   | Leaf v -> v
   | Children _ -> assert false
 
+let trans_heredoc_content ((kind, body) : mt) : CST.heredoc_content =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
 
 let trans_hash_splat_nil ((kind, body) : mt) : CST.hash_splat_nil =
   match body with
@@ -8223,15 +8257,86 @@ let trans_program ((kind, body) : mt) : CST.program =
   | Leaf _ -> assert false
 
 
+let trans_heredoc_body ((kind, body) : mt) : CST.heredoc_body =
+  match body with
+  | Children v ->
+      (match v with
+      | Seq [v0; v1; v2] ->
+          (
+            trans_heredoc_body_start (Run.matcher_token v0),
+            Run.repeat
+              (fun v ->
+                (match v with
+                | Alt (0, v) ->
+                    `Here_content (
+                      trans_heredoc_content (Run.matcher_token v)
+                    )
+                | Alt (1, v) ->
+                    `Interp (
+                      trans_interpolation (Run.matcher_token v)
+                    )
+                | Alt (2, v) ->
+                    `Esc_seq (
+                      trans_escape_sequence (Run.matcher_token v)
+                    )
+                | _ -> assert false
+                )
+              )
+              v1
+            ,
+            trans_heredoc_end (Run.matcher_token v2)
+          )
+      | _ -> assert false
+      )
+  | Leaf _ -> assert false
+
+(*
+   Costly operation that translates a whole tree or subtree.
+
+   The first pass translates it into a generic tree structure suitable
+   to guess which node corresponds to each grammar rule.
+   The second pass is a translation into a typed tree where each grammar
+   node has its own type.
+
+   This function is called:
+   - once on the root of the program after removing extras
+     (comments and other nodes that occur anywhere independently from
+     the grammar);
+   - once of each extra node, resulting in its own independent tree of type
+     'extra'.
+*)
+let translate_tree src node trans_x =
+  let matched_tree = Run.match_tree children_regexps src node in
+  Option.map trans_x matched_tree
+
+
+let translate_extra src (node : Tree_sitter_output_t.node) : CST.extra option =
+  match node.type_ with
+  | "comment" ->
+      (match translate_tree src node trans_comment with
+      | None -> None
+      | Some x -> Some (Comment (Run.get_loc node, x)))
+  | "heredoc_body" ->
+      (match translate_tree src node trans_heredoc_body with
+      | None -> None
+      | Some x -> Some (Heredoc_body (Run.get_loc node, x)))
+  | _ -> None
+
+let translate_root src root_node =
+  translate_tree src root_node trans_program
 
 let parse_input_tree input_tree =
   let orig_root_node = Tree_sitter_parsing.root input_tree in
   let src = Tree_sitter_parsing.src input_tree in
   let errors = Run.extract_errors src orig_root_node in
-  let root_node = Run.remove_extras ~extras orig_root_node in
-  let matched_tree = Run.match_tree children_regexps src root_node in
-  let opt_program = Option.map trans_program matched_tree in
-  Parsing_result.create src opt_program errors
+  let opt_program, extras =
+     Run.translate
+       ~extras
+       ~translate_root:(translate_root src)
+       ~translate_extra:(translate_extra src)
+       orig_root_node
+  in
+  Parsing_result.create src opt_program extras errors
 
 let string ?src_file contents =
   let input_tree = parse_source_string ?src_file contents in

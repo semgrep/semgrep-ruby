@@ -1516,3 +1516,10 @@ type heredoc_body (* inlined *) = (
       list (* zero or more *)
   * heredoc_end (*tok*)
 )
+
+type extra = 
+    Comment of Loc.t * comment
+  | Heredoc_body of Loc.t * heredoc_body
+
+
+type extras = extra list
