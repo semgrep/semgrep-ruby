@@ -3189,8 +3189,8 @@ let dump_tree root =
 
 let map_extra (env : env) (x : CST.extra) =
   match x with
-  | Comment (_loc, x) -> ("comment", "comment", map_comment env x)
-  | Heredoc_body (_loc, x) -> ("heredoc_body", "heredoc_body", map_heredoc_body env x)
+  | `Comment (_loc, x) -> ("comment", "comment", map_comment env x)
+  | `Heredoc_body (_loc, x) -> ("heredoc_body", "heredoc_body", map_heredoc_body env x)
 
 let dump_extras (extras : CST.extras) =
   List.iter (fun extra ->
