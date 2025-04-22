@@ -2,25 +2,31 @@ File: semgrep-grammars/src/tree-sitter-ruby/LICENSE
 Git repo name: tree-sitter-ruby
 Latest commit in repo: f257f3f57833d584050336921773738a3fd8ca22
 Last change in file:
-  commit 1fea099237d85381ad99cf4cab63c75e341715a6
-  Author: Rob Rix <rob.rix@github.com>
-  Date:   Thu Feb 18 08:56:43 2016 -0500
+  commit f257f3f57833d584050336921773738a3fd8ca22
+  Author: Max Brunsfeld <maxbrunsfeld@gmail.com>
+  Date:   Mon Jun 12 13:35:19 2023 -0700
   
-      Basic setup.
+      Remove error corpus file
+      
+      Exact error recoveries are subject to change, and should
+      not be asserted about in corpus tests.
 ---
 File: semgrep-grammars/src/tree-sitter-ruby/grammar.js
 Git repo name: tree-sitter-ruby
 Latest commit in repo: f257f3f57833d584050336921773738a3fd8ca22
 Last change in file:
-  commit c6009bf2c5afa9595413836ade5c589e0674cac9
-  Author: Arthur Baars <aibaars@github.com>
-  Date:   Thu Nov 4 15:33:02 2021 +0100
+  commit f257f3f57833d584050336921773738a3fd8ca22
+  Author: Max Brunsfeld <maxbrunsfeld@gmail.com>
+  Date:   Mon Jun 12 13:35:19 2023 -0700
   
-      Resolve conflicts between pair syntax and match pattern syntax
+      Remove error corpus file
+      
+      Exact error recoveries are subject to change, and should
+      not be asserted about in corpus tests.
 ---
 File: semgrep-grammars/src/semgrep-ruby/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: 62c59803ce966ac00210b5ed8aa163a926f7eaad
+Latest commit in repo: 091f5438fc0c15b80217f00e5b94ec0e55517383
 Last change in file:
   commit 4f4e890c6bba5597d3f89e52262bf563a49bea3d
   Author: brandonspark <wu.brandonj@gmail.com>
