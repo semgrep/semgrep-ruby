@@ -76,7 +76,7 @@ type singleton_class_left_angle_left_langle = Token.t
 type symbol_array_start = Token.t
 
 type character =
-  Token.t (* pattern \?(\\\S({[0-9A-Fa-f]*}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *)
+  Token.t (* pattern \?(\\\S(\{[0-9A-Fa-f]*\}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *)
 
 type pat_74d21aa = Token.t (* pattern __END__[\r\n] *)
 

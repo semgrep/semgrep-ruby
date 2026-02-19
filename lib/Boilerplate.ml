@@ -140,7 +140,7 @@ let map_symbol_array_start (env : env) (tok : CST.symbol_array_start) =
   (* symbol_array_start *) token env tok
 
 let map_character (env : env) (tok : CST.character) =
-  (* pattern \?(\\\S({[0-9A-Fa-f]*}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
+  (* pattern \?(\\\S(\{[0-9A-Fa-f]*\}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
 
 let map_pat_74d21aa (env : env) (tok : CST.pat_74d21aa) =
   (* pattern __END__[\r\n] *) token env tok
@@ -2540,7 +2540,7 @@ and map_primary (env : env) (x : CST.primary) =
           map_string_ env x
         )
       | `Char tok -> R.Case ("Char",
-          (* pattern \?(\\\S({[0-9A-Fa-f]*}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
+          (* pattern \?(\\\S(\{[0-9A-Fa-f]*\}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
         )
       | `Chai_str x -> R.Case ("Chai_str",
           map_chained_string env x
