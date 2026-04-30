@@ -40,8 +40,8 @@ let map_pat_3d340f6 (env : env) (tok : CST.pat_3d340f6) =
 let map_string_start (env : env) (tok : CST.string_start) =
   (* string_start *) token env tok
 
-let map_tok_pat_562b724_pat_f7bc484 (env : env) (tok : CST.tok_pat_562b724_pat_f7bc484) =
-  (* tok_pat_562b724_pat_f7bc484 *) token env tok
+let map_tok_atat_pat_283761c_pat_f7bc484 (env : env) (tok : CST.tok_atat_pat_283761c_pat_f7bc484) =
+  (* tok_atat_pat_283761c_pat_f7bc484 *) token env tok
 
 let map_line_break (env : env) (tok : CST.line_break) =
   (* line_break *) token env tok
@@ -49,14 +49,8 @@ let map_line_break (env : env) (tok : CST.line_break) =
 let map_string_array_start (env : env) (tok : CST.string_array_start) =
   (* string_array_start *) token env tok
 
-let map_class_variable (env : env) (tok : CST.class_variable) =
-  (* class_variable *) token env tok
-
 let map_block_ampersand (env : env) (tok : CST.block_ampersand) =
   (* block_ampersand *) token env tok
-
-let map_uninterpreted (env : env) (tok : CST.uninterpreted) =
-  (* pattern (.|\s)* *) token env tok
 
 let map_imm_tok_eq (env : env) (tok : CST.imm_tok_eq) =
   (* "=" *) token env tok
@@ -130,8 +124,8 @@ let map_float_ (env : env) (tok : CST.float_) =
 let map_escape_sequence (env : env) (tok : CST.escape_sequence) =
   (* escape_sequence *) token env tok
 
-let map_unary_minus (env : env) (tok : CST.unary_minus) =
-  (* unary_minus *) token env tok
+let map_tok_prec_p1000_pat_060abea (env : env) (tok : CST.tok_prec_p1000_pat_060abea) =
+  (* tok_prec_p1000_pat_060abea *) token env tok
 
 let map_singleton_class_left_angle_left_langle (env : env) (tok : CST.singleton_class_left_angle_left_langle) =
   (* singleton_class_left_angle_left_langle *) token env tok
@@ -139,14 +133,17 @@ let map_singleton_class_left_angle_left_langle (env : env) (tok : CST.singleton_
 let map_symbol_array_start (env : env) (tok : CST.symbol_array_start) =
   (* symbol_array_start *) token env tok
 
+let map_uninterpreted (env : env) (tok : CST.uninterpreted) =
+  (* pattern (.|\s)* *) token env tok
+
+let map_unary_minus (env : env) (tok : CST.unary_minus) =
+  (* unary_minus *) token env tok
+
 let map_character (env : env) (tok : CST.character) =
-  (* pattern \?(\\\S({[0-9A-Fa-f]*}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
+  (* pattern \?(\\\S(\{[0-9A-Fa-f]*\}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
 
 let map_pat_74d21aa (env : env) (tok : CST.pat_74d21aa) =
   (* pattern __END__[\r\n] *) token env tok
-
-let map_instance_variable (env : env) (tok : CST.instance_variable) =
-  (* instance_variable *) token env tok
 
 let map_hash_splat_nil (env : env) ((v1, v2) : CST.hash_splat_nil) =
   let v1 = (* "**" *) token env v1 in
@@ -156,8 +153,8 @@ let map_hash_splat_nil (env : env) ((v1, v2) : CST.hash_splat_nil) =
 let map_constant_suffix_ (env : env) (tok : CST.constant_suffix_) =
   (* constant_suffix_ *) token env tok
 
-let map_tok_pat_562b724_pat_f7bc484_pat_38b534e (env : env) (tok : CST.tok_pat_562b724_pat_f7bc484_pat_38b534e) =
-  (* tok_pat_562b724_pat_f7bc484_pat_38b534e *) token env tok
+let map_tok_pat_3fee85b_pat_f7bc484_pat_38b534e (env : env) (tok : CST.tok_pat_3fee85b_pat_f7bc484_pat_38b534e) =
+  (* tok_pat_3fee85b_pat_f7bc484_pat_38b534e *) token env tok
 
 let map_identifier (env : env) (tok : CST.identifier) =
   (* identifier *) token env tok
@@ -292,14 +289,23 @@ let map_imm_tok_coloncolon (env : env) (tok : CST.imm_tok_coloncolon) =
 let map_binary_minus (env : env) (tok : CST.binary_minus) =
   (* binary_minus *) token env tok
 
-let map_tok_prec_p1000_dotdotdot_comma (env : env) (tok : CST.tok_prec_p1000_dotdotdot_comma) =
-  (* tok_prec_p1000_dotdotdot_comma *) token env tok
+let map_tok_pat_562b724_pat_f7bc484 (env : env) (tok : CST.tok_pat_562b724_pat_f7bc484) =
+  (* tok_pat_562b724_pat_f7bc484 *) token env tok
+
+let map_unary_minus_num (env : env) (tok : CST.unary_minus_num) =
+  (* unary_minus_num *) token env tok
 
 let map_heredoc_body_start (env : env) (tok : CST.heredoc_body_start) =
   (* heredoc_body_start *) token env tok
 
-let map_unary_minus_num (env : env) (tok : CST.unary_minus_num) =
-  (* unary_minus_num *) token env tok
+let map_tok_prec_p1000_dotdotdot_comma (env : env) (tok : CST.tok_prec_p1000_dotdotdot_comma) =
+  (* tok_prec_p1000_dotdotdot_comma *) token env tok
+
+let map_tok_prec_p1000_pat_1017af6 (env : env) (tok : CST.tok_prec_p1000_pat_1017af6) =
+  (* tok_prec_p1000_pat_1017af6 *) token env tok
+
+let map_tok_pat_562b724_pat_f7bc484_pat_38b534e (env : env) (tok : CST.tok_pat_562b724_pat_f7bc484_pat_38b534e) =
+  (* tok_pat_562b724_pat_f7bc484_pat_38b534e *) token env tok
 
 let map_identifier_suffix_ (env : env) (tok : CST.identifier_suffix_) =
   (* identifier_suffix_ *) token env tok
@@ -316,8 +322,8 @@ let map_subshell_start (env : env) (tok : CST.subshell_start) =
 let map_binary_star_star (env : env) (tok : CST.binary_star_star) =
   (* binary_star_star *) token env tok
 
-let map_tok_pat_3fee85b_pat_f7bc484_pat_38b534e (env : env) (tok : CST.tok_pat_3fee85b_pat_f7bc484_pat_38b534e) =
-  (* tok_pat_3fee85b_pat_f7bc484_pat_38b534e *) token env tok
+let map_tok_at_pat_283761c_pat_f7bc484 (env : env) (tok : CST.tok_at_pat_283761c_pat_f7bc484) =
+  (* tok_at_pat_283761c_pat_f7bc484 *) token env tok
 
 let map_heredoc_beginning (env : env) (tok : CST.heredoc_beginning) =
   (* heredoc_beginning *) token env tok
@@ -352,13 +358,13 @@ let map_terminator (env : env) (x : CST.terminator) =
     )
   )
 
-let map_constant_suffix (env : env) (x : CST.constant_suffix) =
+let map_class_variable (env : env) (x : CST.class_variable) =
   (match x with
-  | `Tok_pat_562b724_pat_f7bc484_pat_38b534e x -> R.Case ("Tok_pat_562b724_pat_f7bc484_pat_38b534e",
-      map_tok_pat_562b724_pat_f7bc484_pat_38b534e env x
+  | `Tok_atat_pat_283761c_pat_f7bc484 x -> R.Case ("Tok_atat_pat_283761c_pat_f7bc484",
+      map_tok_atat_pat_283761c_pat_f7bc484 env x
     )
-  | `Cst_suffix_ tok -> R.Case ("Cst_suffix_",
-      (* constant_suffix_ *) token env tok
+  | `Tok_prec_p1000_pat_060abea x -> R.Case ("Tok_prec_p1000_pat_060abea",
+      map_tok_prec_p1000_pat_060abea env x
     )
   )
 
@@ -384,16 +390,6 @@ let map_hash_splat_parameter (env : env) ((v1, v2) : CST.hash_splat_parameter) =
   in
   R.Tuple [v1; v2]
 
-let map_constant (env : env) (x : CST.constant) =
-  (match x with
-  | `Tok_pat_562b724_pat_f7bc484 x -> R.Case ("Tok_pat_562b724_pat_f7bc484",
-      map_tok_pat_562b724_pat_f7bc484 env x
-    )
-  | `Semg_meta tok -> R.Case ("Semg_meta",
-      (* semgrep_metavariable *) token env tok
-    )
-  )
-
 let map_int_or_float (env : env) (x : CST.int_or_float) =
   (match x with
   | `Int tok -> R.Case ("Int",
@@ -418,6 +414,26 @@ let map_call_operator (env : env) (x : CST.call_operator) =
     )
   )
 
+let map_constant (env : env) (x : CST.constant) =
+  (match x with
+  | `Tok_pat_562b724_pat_f7bc484 x -> R.Case ("Tok_pat_562b724_pat_f7bc484",
+      map_tok_pat_562b724_pat_f7bc484 env x
+    )
+  | `Semg_meta tok -> R.Case ("Semg_meta",
+      (* semgrep_metavariable *) token env tok
+    )
+  )
+
+let map_constant_suffix (env : env) (x : CST.constant_suffix) =
+  (match x with
+  | `Tok_pat_562b724_pat_f7bc484_pat_38b534e x -> R.Case ("Tok_pat_562b724_pat_f7bc484_pat_38b534e",
+      map_tok_pat_562b724_pat_f7bc484_pat_38b534e env x
+    )
+  | `Cst_suffix_ tok -> R.Case ("Cst_suffix_",
+      (* constant_suffix_ *) token env tok
+    )
+  )
+
 let map_identifier_suffix (env : env) (x : CST.identifier_suffix) =
   (match x with
   | `Tok_pat_3fee85b_pat_f7bc484_pat_38b534e x -> R.Case ("Tok_pat_3fee85b_pat_f7bc484_pat_38b534e",
@@ -428,17 +444,13 @@ let map_identifier_suffix (env : env) (x : CST.identifier_suffix) =
     )
   )
 
-let map_nonlocal_variable (env : env) (x : CST.nonlocal_variable) =
+let map_instance_variable (env : env) (x : CST.instance_variable) =
   (match x with
-  | `Inst_var tok -> R.Case ("Inst_var",
-      (* instance_variable *) token env tok
+  | `Tok_at_pat_283761c_pat_f7bc484 x -> R.Case ("Tok_at_pat_283761c_pat_f7bc484",
+      map_tok_at_pat_283761c_pat_f7bc484 env x
     )
-  | `Class_var tok -> R.Case ("Class_var",
-      (* class_variable *) token env tok
-    )
-  | `Global_var tok -> R.Case ("Global_var",
-      (* pattern "\\$(-[a-zA-Z0-9_]|[!@&`'+~=/\\\\,;.<>*$?:\"]|[0-9]+|[a-zA-Z_][a-zA-Z0-9_]*\
-  )" *) token env tok
+  | `Tok_prec_p1000_pat_1017af6 x -> R.Case ("Tok_prec_p1000_pat_1017af6",
+      map_tok_prec_p1000_pat_1017af6 env x
     )
   )
 
@@ -477,6 +489,20 @@ let map_hash_pattern_any_rest (env : env) (x : CST.hash_pattern_any_rest) =
     )
   )
 
+let map_complex (env : env) (x : CST.complex) =
+  (match x with
+  | `Int_or_float_imm_tok_i (v1, v2) -> R.Case ("Int_or_float_imm_tok_i",
+      let v1 = map_int_or_float env v1 in
+      let v2 = map_imm_tok_i env v2 in
+      R.Tuple [v1; v2]
+    )
+  | `Int_or_float_imm_tok_ri (v1, v2) -> R.Case ("Int_or_float_imm_tok_ri",
+      let v1 = map_int_or_float env v1 in
+      let v2 = map_imm_tok_ri env v2 in
+      R.Tuple [v1; v2]
+    )
+  )
+
 let rec map_pattern_constant (env : env) (x : CST.pattern_constant) =
   (match x with
   | `Cst x -> R.Case ("Cst",
@@ -496,20 +522,6 @@ let rec map_pattern_constant (env : env) (x : CST.pattern_constant) =
     )
   )
 
-let map_complex (env : env) (x : CST.complex) =
-  (match x with
-  | `Int_or_float_imm_tok_i (v1, v2) -> R.Case ("Int_or_float_imm_tok_i",
-      let v1 = map_int_or_float env v1 in
-      let v2 = map_imm_tok_i env v2 in
-      R.Tuple [v1; v2]
-    )
-  | `Int_or_float_imm_tok_ri (v1, v2) -> R.Case ("Int_or_float_imm_tok_ri",
-      let v1 = map_int_or_float env v1 in
-      let v2 = map_imm_tok_ri env v2 in
-      R.Tuple [v1; v2]
-    )
-  )
-
 let map_function_identifier (env : env) (x : CST.function_identifier) =
   (match x with
   | `Id_suffix x -> R.Case ("Id_suffix",
@@ -520,22 +532,17 @@ let map_function_identifier (env : env) (x : CST.function_identifier) =
     )
   )
 
-let map_variable (env : env) (x : CST.variable) =
+let map_nonlocal_variable (env : env) (x : CST.nonlocal_variable) =
   (match x with
-  | `Self tok -> R.Case ("Self",
-      (* "self" *) token env tok
+  | `Inst_var x -> R.Case ("Inst_var",
+      map_instance_variable env x
     )
-  | `Super tok -> R.Case ("Super",
-      (* "super" *) token env tok
+  | `Class_var x -> R.Case ("Class_var",
+      map_class_variable env x
     )
-  | `Nonl_var x -> R.Case ("Nonl_var",
-      map_nonlocal_variable env x
-    )
-  | `Id tok -> R.Case ("Id",
-      (* identifier *) token env tok
-    )
-  | `Cst x -> R.Case ("Cst",
-      map_constant env x
+  | `Global_var tok -> R.Case ("Global_var",
+      (* pattern "\\$(-[a-zA-Z0-9_]|[!@&`'+~=/\\\\,;.<>*$?:\"]|[0-9]+|[a-zA-Z_][a-zA-Z0-9_]*\
+  )" *) token env tok
     )
   )
 
@@ -560,6 +567,25 @@ let map_simple_numeric (env : env) (x : CST.simple_numeric) =
 
 let map_function_identifier_call (env : env) (x : CST.function_identifier_call) =
   map_function_identifier env x
+
+let map_variable (env : env) (x : CST.variable) =
+  (match x with
+  | `Self tok -> R.Case ("Self",
+      (* "self" *) token env tok
+    )
+  | `Super tok -> R.Case ("Super",
+      (* "super" *) token env tok
+    )
+  | `Nonl_var x -> R.Case ("Nonl_var",
+      map_nonlocal_variable env x
+    )
+  | `Id tok -> R.Case ("Id",
+      (* identifier *) token env tok
+    )
+  | `Cst x -> R.Case ("Cst",
+      map_constant env x
+    )
+  )
 
 let map_anon_choice_var_2a392d7 (env : env) (x : CST.anon_choice_var_2a392d7) =
   (match x with
@@ -2293,6 +2319,12 @@ and map_parameters (env : env) ((v1, v2, v3) : CST.parameters) =
   let v3 = (* ")" *) token env v3 in
   R.Tuple [v1; v2; v3]
 
+and map_parenthesized_pattern (env : env) ((v1, v2, v3) : CST.parenthesized_pattern) =
+  let v1 = (* "(" *) token env v1 in
+  let v2 = map_pattern_expr env v2 in
+  let v3 = (* ")" *) token env v3 in
+  R.Tuple [v1; v2; v3]
+
 and map_parenthesized_statements (env : env) ((v1, v2, v3) : CST.parenthesized_statements) =
   let v1 = (* "(" *) token env v1 in
   let v2 =
@@ -2362,26 +2394,30 @@ and map_pattern_expr_alt (env : env) (x : CST.pattern_expr_alt) =
 
 and map_pattern_expr_basic (env : env) (x : CST.pattern_expr_basic) =
   (match x with
-  | `Pat_value x -> R.Case ("Pat_value",
-      map_pattern_value env x
+  | `Choice_pat_value x -> R.Case ("Choice_pat_value",
+      (match x with
+      | `Pat_value x -> R.Case ("Pat_value",
+          map_pattern_value env x
+        )
+      | `Id tok -> R.Case ("Id",
+          (* identifier *) token env tok
+        )
+      | `Array_pat x -> R.Case ("Array_pat",
+          map_array_pattern env x
+        )
+      | `Find_pat x -> R.Case ("Find_pat",
+          map_find_pattern env x
+        )
+      | `Hash_pat x -> R.Case ("Hash_pat",
+          map_hash_pattern env x
+        )
+      | `Paren_pat x -> R.Case ("Paren_pat",
+          map_parenthesized_pattern env x
+        )
+      )
     )
-  | `Id tok -> R.Case ("Id",
-      (* identifier *) token env tok
-    )
-  | `Array_pat x -> R.Case ("Array_pat",
-      map_array_pattern env x
-    )
-  | `Find_pat x -> R.Case ("Find_pat",
-      map_find_pattern env x
-    )
-  | `Hash_pat x -> R.Case ("Hash_pat",
-      map_hash_pattern env x
-    )
-  | `Paren_pat (v1, v2, v3) -> R.Case ("Paren_pat",
-      let v1 = (* "(" *) token env v1 in
-      let v2 = map_pattern_expr env v2 in
-      let v3 = (* ")" *) token env v3 in
-      R.Tuple [v1; v2; v3]
+  | `Semg_ellips tok -> R.Case ("Semg_ellips",
+      (* "..." *) token env tok
     )
   )
 
@@ -2540,7 +2576,7 @@ and map_primary (env : env) (x : CST.primary) =
           map_string_ env x
         )
       | `Char tok -> R.Case ("Char",
-          (* pattern \?(\\\S({[0-9A-Fa-f]*}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
+          (* pattern \?(\\\S(\{[0-9A-Fa-f]*\}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
         )
       | `Chai_str x -> R.Case ("Chai_str",
           map_chained_string env x
