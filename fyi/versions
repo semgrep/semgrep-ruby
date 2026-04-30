@@ -2,35 +2,50 @@ File: semgrep-grammars/src/tree-sitter-ruby/LICENSE
 Git repo name: tree-sitter-ruby
 Latest commit in repo: f257f3f57833d584050336921773738a3fd8ca22
 Last change in file:
-  commit f257f3f57833d584050336921773738a3fd8ca22
-  Author: Max Brunsfeld <maxbrunsfeld@gmail.com>
-  Date:   Mon Jun 12 13:35:19 2023 -0700
+  commit 1fea099237d85381ad99cf4cab63c75e341715a6
+  Author: Rob Rix <rob.rix@github.com>
+  Date:   Thu Feb 18 08:56:43 2016 -0500
   
-      Remove error corpus file
-      
-      Exact error recoveries are subject to change, and should
-      not be asserted about in corpus tests.
+      Basic setup.
 ---
 File: semgrep-grammars/src/tree-sitter-ruby/grammar.js
 Git repo name: tree-sitter-ruby
 Latest commit in repo: f257f3f57833d584050336921773738a3fd8ca22
 Last change in file:
-  commit f257f3f57833d584050336921773738a3fd8ca22
-  Author: Max Brunsfeld <maxbrunsfeld@gmail.com>
-  Date:   Mon Jun 12 13:35:19 2023 -0700
+  commit c6009bf2c5afa9595413836ade5c589e0674cac9
+  Author: Arthur Baars <aibaars@github.com>
+  Date:   Thu Nov 4 15:33:02 2021 +0100
   
-      Remove error corpus file
-      
-      Exact error recoveries are subject to change, and should
-      not be asserted about in corpus tests.
+      Resolve conflicts between pair syntax and match pattern syntax
 ---
 File: semgrep-grammars/src/semgrep-ruby/grammar.js
-Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: 091f5438fc0c15b80217f00e5b94ec0e55517383
+Git repo name: agent-aad60aa805b4723f5
+Latest commit in repo: e60629b47e69ab6828ad9bb299c1e6c30a0c815c
 Last change in file:
-  commit 4f4e890c6bba5597d3f89e52262bf563a49bea3d
-  Author: brandonspark <wu.brandonj@gmail.com>
-  Date:   Mon Sep 18 11:59:04 2023 -0700
+  commit e60629b47e69ab6828ad9bb299c1e6c30a0c815c
+  Author: brandonspark <brandon@semgrep.com>
+  Date:   Wed Apr 29 17:41:39 2026 -0700
   
-      fix regular blocks
+      fix(ruby): allow instance/class variable metavars and array-pattern ellipsis
+      
+      Augments the Semgrep Ruby grammar to recognize two more pattern shapes that
+      users hit in real rules:
+      
+      - LANG-485: `@$X` and `@@$X` are now valid instance / class variable
+        metavars. The upstream tokens are extended with `@\$[A-Z_][A-Z_0-9]*` /
+        `@@\$[A-Z_][A-Z_0-9]*` regexes (high precedence so the metavar form
+        wins over `@` followed by something else).
+      - LANG-491: `...` is now a valid pattern element inside array, find and
+        hash patterns (e.g. `case x in [\$A, \$B, ...]`). Done by extending
+        `_pattern_expr_basic` with `semgrep_ellipsis`. The expected new
+        `_pattern_expr_basic` reductions overlap with `pair`, `keyword_pattern`
+        and `_primary` when the body collapses to just `...`, so a few new
+        conflicts entries are added; tree-sitter is happy with any of those
+        reductions and the Generic translation does not care which is chosen.
+      
+      LANG-481 (`?` / `!` predicate-bang suffix on metavars) is intentionally
+      deferred: that is a scanner / entry-point level lexer change rather than
+      an additive grammar rule, and is being tracked separately.
+      
+      Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 ---

@@ -22,17 +22,13 @@ type pat_3d340f6 = Token.t (* pattern \s+ *)
 
 type string_start = Token.t
 
-type tok_pat_562b724_pat_f7bc484 = Token.t
+type tok_atat_pat_283761c_pat_f7bc484 = Token.t
 
 type line_break = Token.t
 
 type string_array_start = Token.t
 
-type class_variable = Token.t
-
 type block_ampersand = Token.t
-
-type uninterpreted = Token.t (* pattern (.|\s)* *)
 
 type imm_tok_eq = Token.t (* "=" *)
 
@@ -69,24 +65,26 @@ type float_ =
 
 type escape_sequence = Token.t
 
-type unary_minus = Token.t
+type tok_prec_p1000_pat_060abea = Token.t
 
 type singleton_class_left_angle_left_langle = Token.t
 
 type symbol_array_start = Token.t
 
+type uninterpreted = Token.t (* pattern (.|\s)* *)
+
+type unary_minus = Token.t
+
 type character =
-  Token.t (* pattern \?(\\\S({[0-9A-Fa-f]*}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *)
+  Token.t (* pattern \?(\\\S(\{[0-9A-Fa-f]*\}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *)
 
 type pat_74d21aa = Token.t (* pattern __END__[\r\n] *)
-
-type instance_variable = Token.t
 
 type hash_splat_nil = (Token.t (* "**" *) * Token.t (* "nil" *))
 
 type constant_suffix_ = Token.t
 
-type tok_pat_562b724_pat_f7bc484_pat_38b534e = Token.t
+type tok_pat_3fee85b_pat_f7bc484_pat_38b534e = Token.t
 
 type identifier = Token.t
 
@@ -149,11 +147,17 @@ type imm_tok_coloncolon = Token.t (* "::" *)
 
 type binary_minus = Token.t
 
-type tok_prec_p1000_dotdotdot_comma = Token.t
+type tok_pat_562b724_pat_f7bc484 = Token.t
+
+type unary_minus_num = Token.t
 
 type heredoc_body_start = Token.t
 
-type unary_minus_num = Token.t
+type tok_prec_p1000_dotdotdot_comma = Token.t
+
+type tok_prec_p1000_pat_1017af6 = Token.t
+
+type tok_pat_562b724_pat_f7bc484_pat_38b534e = Token.t
 
 type identifier_suffix_ = Token.t
 
@@ -165,7 +169,7 @@ type subshell_start = Token.t
 
 type binary_star_star = Token.t
 
-type tok_pat_3fee85b_pat_f7bc484_pat_38b534e = Token.t
+type tok_at_pat_283761c_pat_f7bc484 = Token.t
 
 type heredoc_beginning = Token.t
 
@@ -187,20 +191,14 @@ type terminator = [
   | `SEMI of Token.t (* ";" *)
 ]
 
-type constant_suffix = [
-    `Tok_pat_562b724_pat_f7bc484_pat_38b534e of
-      tok_pat_562b724_pat_f7bc484_pat_38b534e
-  | `Cst_suffix_ of constant_suffix_ (*tok*)
+type class_variable = [
+    `Tok_atat_pat_283761c_pat_f7bc484 of tok_atat_pat_283761c_pat_f7bc484
+  | `Tok_prec_p1000_pat_060abea of tok_prec_p1000_pat_060abea (*tok*)
 ]
 
 type splat_parameter = (Token.t (* "*" *) * identifier (*tok*) option)
 
 type hash_splat_parameter = (Token.t (* "**" *) * identifier (*tok*) option)
-
-type constant = [
-    `Tok_pat_562b724_pat_f7bc484 of tok_pat_562b724_pat_f7bc484
-  | `Semg_meta of semgrep_metavariable (*tok*)
-]
 
 type int_or_float = [ `Int of integer (*tok*) | `Float of float_ (*tok*) ]
 
@@ -210,16 +208,26 @@ type call_operator = [
   | `Imm_tok_colo of imm_tok_coloncolon (*tok*)
 ]
 
+type constant = [
+    `Tok_pat_562b724_pat_f7bc484 of tok_pat_562b724_pat_f7bc484
+  | `Semg_meta of semgrep_metavariable (*tok*)
+]
+
+type constant_suffix = [
+    `Tok_pat_562b724_pat_f7bc484_pat_38b534e of
+      tok_pat_562b724_pat_f7bc484_pat_38b534e
+  | `Cst_suffix_ of constant_suffix_ (*tok*)
+]
+
 type identifier_suffix = [
     `Tok_pat_3fee85b_pat_f7bc484_pat_38b534e of
       tok_pat_3fee85b_pat_f7bc484_pat_38b534e
   | `Id_suffix_ of identifier_suffix_ (*tok*)
 ]
 
-type nonlocal_variable = [
-    `Inst_var of instance_variable (*tok*)
-  | `Class_var of class_variable (*tok*)
-  | `Global_var of global_variable (*tok*)
+type instance_variable = [
+    `Tok_at_pat_283761c_pat_f7bc484 of tok_at_pat_283761c_pat_f7bc484
+  | `Tok_prec_p1000_pat_1017af6 of tok_prec_p1000_pat_1017af6 (*tok*)
 ]
 
 type keyword_variable = [
@@ -237,6 +245,11 @@ type hash_pattern_any_rest = [
   | `Hash_splat_nil of hash_splat_nil
 ]
 
+type complex = [
+    `Int_or_float_imm_tok_i of (int_or_float * imm_tok_i (*tok*))
+  | `Int_or_float_imm_tok_ri of (int_or_float * imm_tok_ri (*tok*))
+]
+
 type pattern_constant = [
     `Cst of constant
   | `Pat_cst_resol of (
@@ -246,22 +259,15 @@ type pattern_constant = [
     )
 ]
 
-type complex = [
-    `Int_or_float_imm_tok_i of (int_or_float * imm_tok_i (*tok*))
-  | `Int_or_float_imm_tok_ri of (int_or_float * imm_tok_ri (*tok*))
-]
-
 type function_identifier = [
     `Id_suffix of identifier_suffix
   | `Cst_suffix of constant_suffix
 ]
 
-type variable = [
-    `Self of Token.t (* "self" *)
-  | `Super of Token.t (* "super" *)
-  | `Nonl_var of nonlocal_variable
-  | `Id of identifier (*tok*)
-  | `Cst of constant
+type nonlocal_variable = [
+    `Inst_var of instance_variable
+  | `Class_var of class_variable
+  | `Global_var of global_variable (*tok*)
 ]
 
 type simple_numeric = [
@@ -272,6 +278,14 @@ type simple_numeric = [
 ]
 
 type function_identifier_call = function_identifier
+
+type variable = [
+    `Self of Token.t (* "self" *)
+  | `Super of Token.t (* "super" *)
+  | `Nonl_var of nonlocal_variable
+  | `Id of identifier (*tok*)
+  | `Cst of constant
+]
 
 type anon_choice_var_2a392d7 = [
     `Var of variable
@@ -963,6 +977,10 @@ and parameters = (
   * Token.t (* ")" *)
 )
 
+and parenthesized_pattern = (
+    Token.t (* "(" *) * pattern_expr * Token.t (* ")" *)
+)
+
 and parenthesized_statements = (
     Token.t (* "(" *)
   * block_body option
@@ -990,12 +1008,15 @@ and pattern_expr_alt = [
 ]
 
 and pattern_expr_basic = [
-    `Pat_value of pattern_value
-  | `Id of identifier (*tok*)
-  | `Array_pat of array_pattern
-  | `Find_pat of find_pattern
-  | `Hash_pat of hash_pattern
-  | `Paren_pat of (Token.t (* "(" *) * pattern_expr * Token.t (* ")" *))
+    `Choice_pat_value of [
+        `Pat_value of pattern_value
+      | `Id of identifier (*tok*)
+      | `Array_pat of array_pattern
+      | `Find_pat of find_pattern
+      | `Hash_pat of hash_pattern
+      | `Paren_pat of parenthesized_pattern
+    ]
+  | `Semg_ellips of Token.t (* "..." *)
 ]
 
 and pattern_lambda = lambda
@@ -1286,6 +1307,8 @@ type forward_argument (* inlined *) = Token.t (* "..." *)
 
 type semgrep_ellipsis (* inlined *) = Token.t (* "..." *)
 
+type true_ (* inlined *) = Token.t (* "true" *)
+
 type file (* inlined *) = Token.t (* "__FILE__" *)
 
 type nil (* inlined *) = Token.t (* "nil" *)
@@ -1304,8 +1327,6 @@ type super (* inlined *) = Token.t (* "super" *)
 
 type false_ (* inlined *) = Token.t (* "false" *)
 
-type true_ (* inlined *) = Token.t (* "true" *)
-
 type encoding (* inlined *) = Token.t (* "__ENCODING__" *)
 
 type block_parameter (* inlined *) = (
@@ -1315,13 +1336,13 @@ type block_parameter (* inlined *) = (
 
 type setter (* inlined *) = (identifier (*tok*) * imm_tok_eq (*tok*))
 
+type rational (* inlined *) = (int_or_float * imm_tok_r (*tok*))
+
 type pattern_constant_resolution (* inlined *) = (
     pattern_constant option
   * Token.t (* "::" *)
   * constant
 )
-
-type rational (* inlined *) = (int_or_float * imm_tok_r (*tok*))
 
 type variable_reference_pattern (* inlined *) = (
     Token.t (* "^" *)
@@ -1447,10 +1468,6 @@ type operator_assignment (* inlined *) = (
 
 type optional_parameter (* inlined *) = (
     identifier (*tok*) * Token.t (* "=" *) * arg
-)
-
-type parenthesized_pattern (* inlined *) = (
-    Token.t (* "(" *) * pattern_expr * Token.t (* ")" *)
 )
 
 type rescue (* inlined *) = (
