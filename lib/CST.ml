@@ -76,9 +76,9 @@ type singleton_class_left_angle_left_langle = Token.t
 type symbol_array_start = Token.t
 
 type character =
-  Token.t (* pattern \?(\\\S({[0-9A-Fa-f]*}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *)
+  Token.t (* pattern \?(\\\S(\{[0-9A-Fa-f]*\}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *)
 
-type pat_74d21aa = Token.t (* pattern __END__[\r\n] *)
+type pat___end__ = Token.t (* pattern __END__ *)
 
 type instance_variable = Token.t
 
@@ -110,6 +110,7 @@ type operator = [
   | `LT of Token.t (* "<" *)
   | `LTEQ of Token.t (* "<=" *)
   | `PLUS of Token.t (* "+" *)
+  | `BANGEQ of Token.t (* "!=" *)
   | `DASH of Token.t (* "-" *)
   | `STAR of Token.t (* "*" *)
   | `SLASH of Token.t (* "/" *)
@@ -289,7 +290,9 @@ type numeric = [
     )
 ]
 
-type anon_choice_call__23b9492 = [
+type anon_choice_blk_ce9ba27 = [ `Blk of block | `Do_blk of do_block ]
+
+and anon_choice_call__23b9492 = [
     `Call_ of call_
   | `Choice_var of anon_choice_var_2a392d7
 ]
@@ -584,7 +587,7 @@ and call_ = (
 
 and case = (
     Token.t (* "case" *)
-  * statement option
+  * (line_break (*tok*) option * statement) option
   * terminator option
   * when_ list (* zero or more *)
   * else_ option
@@ -593,6 +596,7 @@ and case = (
 
 and case_match = (
     Token.t (* "case" *)
+  * line_break (*tok*) option
   * statement
   * terminator option
   * in_clause list (* one or more *)
@@ -844,7 +848,7 @@ and keyword_pattern = [
 and lambda = (
     Token.t (* "->" *)
   * [ `Params of parameters | `Bare_params of bare_parameters ] option
-  * [ `Blk of block | `Do_blk of do_block ]
+  * anon_choice_blk_ce9ba27
 )
 
 and left_assignment_list = mlhs
@@ -860,6 +864,7 @@ and lhs = [
       * element_reference_bracket (*tok*)
       * argument_list_with_trailing_comma option
       * Token.t (* "]" *)
+      * anon_choice_blk_ce9ba27 option
     )
   | `Call_ of call_
 ]
@@ -1275,11 +1280,7 @@ and yield = (Token.t (* "yield" *) * argument_list option)
 
 type program = (
     block_body option
-  * [
-        `Pat_74d21aa_unin of (pat_74d21aa * uninterpreted (*tok*))
-      | `X___END___ of (Token.t (* "__END__" *) * Token.t (* "" *))
-    ]
-      option
+  * [ `Pat___end___unin of (pat___end__ * uninterpreted (*tok*)) ] option
 )
 
 type forward_argument (* inlined *) = Token.t (* "..." *)
@@ -1399,6 +1400,7 @@ type element_reference (* inlined *) = (
   * element_reference_bracket (*tok*)
   * argument_list_with_trailing_comma option
   * Token.t (* "]" *)
+  * anon_choice_blk_ce9ba27 option
 )
 
 type elsif (* inlined *) = (
