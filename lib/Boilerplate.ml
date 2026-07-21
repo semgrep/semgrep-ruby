@@ -140,10 +140,10 @@ let map_symbol_array_start (env : env) (tok : CST.symbol_array_start) =
   (* symbol_array_start *) token env tok
 
 let map_character (env : env) (tok : CST.character) =
-  (* pattern \?(\\\S({[0-9A-Fa-f]*}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
+  (* pattern \?(\\\S(\{[0-9A-Fa-f]*\}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
 
-let map_pat_74d21aa (env : env) (tok : CST.pat_74d21aa) =
-  (* pattern __END__[\r\n] *) token env tok
+let map_pat___end__ (env : env) (tok : CST.pat___end__) =
+  (* pattern __END__ *) token env tok
 
 let map_instance_variable (env : env) (tok : CST.instance_variable) =
   (* instance_variable *) token env tok
@@ -211,6 +211,9 @@ let map_operator (env : env) (x : CST.operator) =
     )
   | `PLUS tok -> R.Case ("PLUS",
       (* "+" *) token env tok
+    )
+  | `BANGEQ tok -> R.Case ("BANGEQ",
+      (* "!=" *) token env tok
     )
   | `DASH tok -> R.Case ("DASH",
       (* "-" *) token env tok
@@ -592,7 +595,17 @@ let map_numeric (env : env) (x : CST.numeric) =
     )
   )
 
-let rec map_anon_choice_call__23b9492 (env : env) (x : CST.anon_choice_call__23b9492) =
+let rec map_anon_choice_blk_ce9ba27 (env : env) (x : CST.anon_choice_blk_ce9ba27) =
+  (match x with
+  | `Blk x -> R.Case ("Blk",
+      map_block env x
+    )
+  | `Do_blk x -> R.Case ("Do_blk",
+      map_do_block env x
+    )
+  )
+
+and map_anon_choice_call__23b9492 (env : env) (x : CST.anon_choice_call__23b9492) =
   (match x with
   | `Call_ x -> R.Case ("Call_",
       map_call_ env x
@@ -1330,8 +1343,16 @@ and map_case (env : env) ((v1, v2, v3, v4, v5, v6) : CST.case) =
   let v1 = (* "case" *) token env v1 in
   let v2 =
     (match v2 with
-    | Some x -> R.Option (Some (
-        map_statement env x
+    | Some (v1, v2) -> R.Option (Some (
+        let v1 =
+          (match v1 with
+          | Some tok -> R.Option (Some (
+              (* line_break *) token env tok
+            ))
+          | None -> R.Option None)
+        in
+        let v2 = map_statement env v2 in
+        R.Tuple [v1; v2]
       ))
     | None -> R.Option None)
   in
@@ -1353,26 +1374,33 @@ and map_case (env : env) ((v1, v2, v3, v4, v5, v6) : CST.case) =
   let v6 = (* "end" *) token env v6 in
   R.Tuple [v1; v2; v3; v4; v5; v6]
 
-and map_case_match (env : env) ((v1, v2, v3, v4, v5, v6) : CST.case_match) =
+and map_case_match (env : env) ((v1, v2, v3, v4, v5, v6, v7) : CST.case_match) =
   let v1 = (* "case" *) token env v1 in
-  let v2 = map_statement env v2 in
-  let v3 =
-    (match v3 with
+  let v2 =
+    (match v2 with
+    | Some tok -> R.Option (Some (
+        (* line_break *) token env tok
+      ))
+    | None -> R.Option None)
+  in
+  let v3 = map_statement env v3 in
+  let v4 =
+    (match v4 with
     | Some x -> R.Option (Some (
         map_terminator env x
       ))
     | None -> R.Option None)
   in
-  let v4 = R.List (List.map (map_in_clause env) v4) in
-  let v5 =
-    (match v5 with
+  let v5 = R.List (List.map (map_in_clause env) v5) in
+  let v6 =
+    (match v6 with
     | Some x -> R.Option (Some (
         map_else_ env x
       ))
     | None -> R.Option None)
   in
-  let v6 = (* "end" *) token env v6 in
-  R.Tuple [v1; v2; v3; v4; v5; v6]
+  let v7 = (* "end" *) token env v7 in
+  R.Tuple [v1; v2; v3; v4; v5; v6; v7]
 
 and map_chained_command_call (env : env) ((v1, v2, v3) : CST.chained_command_call) =
   let v1 = map_command_call_with_block env v1 in
@@ -1994,16 +2022,7 @@ and map_lambda (env : env) ((v1, v2, v3) : CST.lambda) =
       ))
     | None -> R.Option None)
   in
-  let v3 =
-    (match v3 with
-    | `Blk x -> R.Case ("Blk",
-        map_block env x
-      )
-    | `Do_blk x -> R.Case ("Do_blk",
-        map_do_block env x
-      )
-    )
-  in
+  let v3 = map_anon_choice_blk_ce9ba27 env v3 in
   R.Tuple [v1; v2; v3]
 
 and map_left_assignment_list (env : env) (x : CST.left_assignment_list) =
@@ -2026,7 +2045,7 @@ and map_lhs (env : env) (x : CST.lhs) =
   | `Scope_resol x -> R.Case ("Scope_resol",
       map_scope_resolution env x
     )
-  | `Elem_ref (v1, v2, v3, v4) -> R.Case ("Elem_ref",
+  | `Elem_ref (v1, v2, v3, v4, v5) -> R.Case ("Elem_ref",
       let v1 = map_primary env v1 in
       let v2 = (* element_reference_bracket *) token env v2 in
       let v3 =
@@ -2037,7 +2056,14 @@ and map_lhs (env : env) (x : CST.lhs) =
         | None -> R.Option None)
       in
       let v4 = (* "]" *) token env v4 in
-      R.Tuple [v1; v2; v3; v4]
+      let v5 =
+        (match v5 with
+        | Some x -> R.Option (Some (
+            map_anon_choice_blk_ce9ba27 env x
+          ))
+        | None -> R.Option None)
+      in
+      R.Tuple [v1; v2; v3; v4; v5]
     )
   | `Call_ x -> R.Case ("Call_",
       map_call_ env x
@@ -2540,7 +2566,7 @@ and map_primary (env : env) (x : CST.primary) =
           map_string_ env x
         )
       | `Char tok -> R.Case ("Char",
-          (* pattern \?(\\\S({[0-9A-Fa-f]*}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
+          (* pattern \?(\\\S(\{[0-9A-Fa-f]*\}|[0-9A-Fa-f]*|-\S([MC]-\S)?)?|\S) *) token env tok
         )
       | `Chai_str x -> R.Case ("Chai_str",
           map_chained_string env x
@@ -3144,14 +3170,9 @@ let map_program (env : env) ((v1, v2) : CST.program) =
     (match v2 with
     | Some x -> R.Option (Some (
         (match x with
-        | `Pat_74d21aa_unin (v1, v2) -> R.Case ("Pat_74d21aa_unin",
-            let v1 = map_pat_74d21aa env v1 in
+        | `Pat___end___unin (v1, v2) -> R.Case ("Pat___end___unin",
+            let v1 = map_pat___end__ env v1 in
             let v2 = (* pattern (.|\s)* *) token env v2 in
-            R.Tuple [v1; v2]
-          )
-        | `X___END___ (v1, v2) -> R.Case ("X___END___",
-            let v1 = (* "__END__" *) token env v1 in
-            let v2 = (* "" *) token env v2 in
             R.Tuple [v1; v2]
           )
         )
